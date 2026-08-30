@@ -1,0 +1,6 @@
+{
+  "name": "VigiEstética - Documentos ANVISA & Mercado Pago",
+  "description": "Plataforma de documentos sanitários e jurídicos para clínicas de estética, com Ficha Cadastral, Anamnese Interativa, Estúdio de Análise de Antes e Depois, Mapeamento Fotográfico e Prescrição & Fórmulas Científicas Interativas integradas por procedimento.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -911,7 +911,7 @@ export const ProcedureClinicalDocsModal: React.FC<ProcedureClinicalDocsModalProp
               clinicCnpj={clinicData.cnpj || ''}
               initialData={interactivePatientRecordData}
               onGenerateDoc={(generatedHtml, dataState) => {
-                setInteractivePatientRecordData(dataState);
+                setInteractivePatientRecordData(dataState as any);
                 setActiveTab('ficha_paciente');
                 saveCustomClinicalDocContent(doc.id, 'ficha_paciente', generatedHtml);
                 setEditableHtml(generatedHtml);

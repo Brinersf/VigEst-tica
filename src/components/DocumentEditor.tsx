@@ -270,28 +270,28 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
   };
 
   const VARIABLE_DICTIONARY: Record<string, { label: string; defaultProp: keyof ClinicData | string; category: string; placeholder: string }> = {
-    nome_clinica: { label: 'Nome da Clínica', defaultProp: 'nomeClinica', category: 'Clínica', placeholder: 'Ex: Clínica Estética Avançada' },
-    responsavel_tecnico: { label: 'Responsável Técnico(a)', defaultProp: 'responsavel', category: 'Profissional', placeholder: 'Dra. Mariana Silva (CRBM 1234)' },
-    responsavel: { label: 'Responsável Técnico(a)', defaultProp: 'responsavel', category: 'Profissional', placeholder: 'Dra. Mariana Silva' },
-    registro_conselho: { label: 'Registro no Conselho (CRBM/CRM/COREN)', defaultProp: 'registroConselho', category: 'Profissional', placeholder: 'CRBM 12345 / SP' },
-    registro_profissional: { label: 'Registro Profissional', defaultProp: 'registroConselho', category: 'Profissional', placeholder: 'CRBM 12345' },
-    alvara: { label: 'Alvará Sanitário', defaultProp: 'alvara', category: 'Clínica', placeholder: 'ALV-2025-VISA-88' },
-    alvara_sanitario: { label: 'Alvará Sanitário', defaultProp: 'alvara', category: 'Clínica', placeholder: 'ALV-2025-VISA-88' },
-    endereco: { label: 'Endereço Comercial', defaultProp: 'endereco', category: 'Clínica', placeholder: 'Av. Paulista, 1000 - Conj. 50' },
-    cidade: { label: 'Cidade / UF', defaultProp: 'cidade', category: 'Clínica', placeholder: 'São Paulo - SP' },
-    cidade_uf: { label: 'Cidade / UF', defaultProp: 'cidade', category: 'Clínica', placeholder: 'São Paulo - SP' },
-    telefone: { label: 'Telefone de Contato', defaultProp: 'telefone', category: 'Clínica', placeholder: '(11) 99999-8888' },
-    whatsapp: { label: 'WhatsApp', defaultProp: 'whatsapp', category: 'Clínica', placeholder: '(11) 99999-8888' },
-    email: { label: 'E-mail da Clínica', defaultProp: 'email', category: 'Clínica', placeholder: 'contato@clinica.com.br' },
-    nome_cliente: { label: 'Nome do Paciente / Cliente', defaultProp: 'nomeCliente', category: 'Paciente', placeholder: 'Ana Paula Vasconcelos' },
-    rg_cliente: { label: 'RG do Paciente', defaultProp: 'rgCliente', category: 'Paciente', placeholder: '12.345.678-9 SSP/SP' },
+    nome_clinica: { label: 'Nome da Clínica', defaultProp: 'nomeClinica', category: 'Clínica', placeholder: 'Ex: Sua Clínica / Studio de Estética' },
+    responsavel_tecnico: { label: 'Responsável Técnico(a)', defaultProp: 'responsavel', category: 'Profissional', placeholder: 'Ex: Dra. Nome Completo (CRBM/CRM 0000)' },
+    responsavel: { label: 'Responsável Técnico(a)', defaultProp: 'responsavel', category: 'Profissional', placeholder: 'Ex: Dra. Nome Completo' },
+    registro_conselho: { label: 'Registro no Conselho (CRBM/CRM/COREN)', defaultProp: 'registroConselho', category: 'Profissional', placeholder: 'Ex: CRBM 00000 / SP' },
+    registro_profissional: { label: 'Registro Profissional', defaultProp: 'registroConselho', category: 'Profissional', placeholder: 'Ex: CRBM 00000' },
+    alvara: { label: 'Alvará Sanitário', defaultProp: 'alvara', category: 'Clínica', placeholder: 'Ex: ALV-2026-VISA-00' },
+    alvara_sanitario: { label: 'Alvará Sanitário', defaultProp: 'alvara', category: 'Clínica', placeholder: 'Ex: ALV-2026-VISA-00' },
+    endereco: { label: 'Endereço Comercial', defaultProp: 'endereco', category: 'Clínica', placeholder: 'Ex: Rua / Av., Número - Bairro' },
+    cidade: { label: 'Cidade / UF', defaultProp: 'cidade', category: 'Clínica', placeholder: 'Ex: São Paulo - SP' },
+    cidade_uf: { label: 'Cidade / UF', defaultProp: 'cidade', category: 'Clínica', placeholder: 'Ex: São Paulo - SP' },
+    telefone: { label: 'Telefone de Contato', defaultProp: 'telefone', category: 'Clínica', placeholder: 'Ex: (11) 99999-9999' },
+    whatsapp: { label: 'WhatsApp', defaultProp: 'whatsapp', category: 'Clínica', placeholder: 'Ex: (11) 99999-9999' },
+    email: { label: 'E-mail da Clínica', defaultProp: 'email', category: 'Clínica', placeholder: 'Ex: contato@suaclinica.com.br' },
+    nome_cliente: { label: 'Nome do Paciente / Cliente', defaultProp: 'nomeCliente', category: 'Paciente', placeholder: 'Ex: Nome Completo do(a) Paciente' },
+    rg_cliente: { label: 'RG do Paciente', defaultProp: 'rgCliente', category: 'Paciente', placeholder: 'Ex: 00.000.000-0 SSP/SP' },
     data: { label: 'Data do Documento', defaultProp: 'dataDocumento', category: 'Documento', placeholder: new Date().toLocaleDateString('pt-BR') },
     data_documento: { label: 'Data do Documento', defaultProp: 'dataDocumento', category: 'Documento', placeholder: new Date().toLocaleDateString('pt-BR') },
-    procedimento: { label: 'Nome do Procedimento', defaultProp: 'procedimento', category: 'Procedimento', placeholder: 'Toxina Botulínica / Drenagem' },
-    equipamento: { label: 'Equipamento / Aparelho', defaultProp: 'equipamento', category: 'Procedimento', placeholder: 'Laser de Diodo / Radiofrequência' },
-    registro_anvisa: { label: 'Registro ANVISA do Equipamento', defaultProp: 'registroAnvisa', category: 'Procedimento', placeholder: 'MS nº 80000000000' },
-    valor: { label: 'Valor / Honorários', defaultProp: 'valorHonorarios', category: 'Financeiro', placeholder: 'R$ 1.500,00' },
-    valor_honorarios: { label: 'Valor dos Honorários', defaultProp: 'valorHonorarios', category: 'Financeiro', placeholder: 'R$ 1.500,00' },
+    procedimento: { label: 'Nome do Procedimento', defaultProp: 'procedimento', category: 'Procedimento', placeholder: 'Ex: Toxina Botulínica / Bioestimulador' },
+    equipamento: { label: 'Equipamento / Aparelho', defaultProp: 'equipamento', category: 'Procedimento', placeholder: 'Ex: Laser / Radiofrequência / Ultrassom' },
+    registro_anvisa: { label: 'Registro ANVISA do Equipamento', defaultProp: 'registroAnvisa', category: 'Procedimento', placeholder: 'Ex: MS nº 80000000000' },
+    valor: { label: 'Valor / Honorários', defaultProp: 'valorHonorarios', category: 'Financeiro', placeholder: 'Ex: R$ 1.500,00' },
+    valor_honorarios: { label: 'Valor dos Honorários', defaultProp: 'valorHonorarios', category: 'Financeiro', placeholder: 'Ex: R$ 1.500,00' },
   };
 
   const detectVariablesInDoc = (htmlText: string): string[] => {
@@ -1115,6 +1115,24 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
                   </button>
 
                   <button
+                    onClick={handleDownloadAllDocumentsHTML}
+                    className="w-full px-3.5 py-2 text-left text-emerald-300 hover:text-white hover:bg-emerald-950/40 flex items-center gap-2 font-bold border-t border-[#262626]"
+                    title="Baixar compêndio com todos os documentos em formato HTML A4"
+                  >
+                    <Download className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Baixar Todos os Docs (.HTML)</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleDownloadHTML(pageOrientation)}
+                    className="w-full px-3.5 py-2 text-left text-white hover:bg-[#222222] flex items-center gap-2 font-medium"
+                    title="Baixar este documento atual em formato HTML A4"
+                  >
+                    <Download className="w-3.5 h-3.5 text-[#00D3A1]" />
+                    <span>Baixar Este Doc (.HTML)</span>
+                  </button>
+
+                  <button
                     onClick={handleDownloadDoc}
                     className="w-full px-3.5 py-2 text-left text-white hover:bg-[#222222] flex items-center gap-2 font-medium"
                   >
@@ -1253,7 +1271,7 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
               <ShieldCheck className="w-4 h-4 text-[#00D3A1] shrink-0 mt-0.5" />
               <div className="min-w-0">
                 <span className="font-bold text-white block truncate">
-                  Guia ANVISA para {currentDoc.title}:
+                  Requisitos e Documentos ANVISA para {currentDoc.title}:
                 </span>
                 <p className="text-[#888888] mt-0.5 line-clamp-2 sm:line-clamp-none">
                   {currentDoc.adaptationNotes || 'Revise o responsável técnico, marcas dos produtos químicos/saneantes utilizados e periodicidade das auditorias internas para o seu estabelecimento.'}
@@ -1618,7 +1636,7 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
                                         </div>
                                       </div>
                                     </div>
-                                  ) : currentDoc.category === 'Prescrição' || currentDoc.id.toLowerCase().includes('prescricao') || currentDoc.title.toLowerCase().includes('prescri') ? (
+                                  ) : currentDoc.category === 'Prescricao' || (currentDoc.category as string) === 'Prescrição' || currentDoc.id.toLowerCase().includes('prescricao') || currentDoc.title.toLowerCase().includes('prescri') ? (
                                     <div className="pt-2">
                                       <div className="text-center max-w-[300px] mx-auto font-sans">
                                         <div className="border-b-2 border-[#0f172a] h-10 mb-1.5"></div>

@@ -738,52 +738,6 @@ Aplicar delicadamente sobre as áreas manipuladas (pertuitos de entrada, trajeto
 • Evitar uso de maquiagens oclusivas não estéreis nas primeiras 24 horas sobre os micropontos de inserção de agulha e cânula;<br/>
 • Higienizar as mãos rigorosamente antes de cada aplicação do produto.</p>
 `
-  },
-
-  // 12. RECEITUÁRIO / FORMULÁRIO ESTÉTICO LIVRE PERSONALIZÁVEL
-  {
-    id: 'receituario-estetico-personalizavel-padrao',
-    title: 'Receituário Estético Personalizado (Modelo A4 Oficial com Timbre e Assinatura)',
-    category: 'POP',
-    stepCategory: '6. Prescrições Estéticas e Home Care',
-    version: 'V 4.5 - Timbre Oficial & Receituário',
-    lastModified: '2025-02-20',
-    isEssential: true,
-    iconType: 'Pill',
-    adaptationNotes: 'Modelo de receituário livre em A4 com cabeçalho oficial, dados do paciente, campos de prescrição e rodapé com visto do RT.',
-    content: `
-<h2>RECEITUÁRIO DE PROCEDIMENTOS ESTÉTICOS & HOME CARE</h2>
-<p><strong>Clínica:</strong> {{nome_clinica}} | <strong>Resp. Técnico:</strong> {{responsavel_tecnico}} - {{registro_conselho}}<br>
-<strong>Endereço:</strong> {{endereco}} - {{cidade}} | <strong>Telefone:</strong> {{telefone}} | <strong>Alvará:</strong> {{alvara}}</p>
-
-<hr/>
-
-<p><strong>DADOS DO(A) PACIENTE:</strong><br>
-<strong>Nome Completo:</strong> {{nome_paciente}}<br>
-<strong>Data da Prescrição:</strong> {{data_documento}}<br>
-<strong>Procedimento Realizado / Indicação:</strong> {{procedimento}}</p>
-
-<hr/>
-
-<p><strong>PRESCRIÇÃO TERAPÊUTICA & DIRETRIZES DOMICILIARES:</strong></p>
-
-<div style="min-height: 280px; padding: 15px; border: 1px dashed #cbd5e1; border-radius: 8px; background: #fafafa; font-family: monospace; font-size: 13px; line-height: 1.8;">
-<strong>USO TÓPICO / HOME CARE:</strong><br/>
-1. [Inserir cosmecêutico / fórmula magistral / sérum / creme reparador]<br/>
-&nbsp;&nbsp;&nbsp;Modo de Usar: Aplicar na área tratada _____ vezes ao dia durante _____ dias.<br/><br/>
-2. Protetor Solar Facial com FPS 50+ com toque seco e ação antipoluição.<br/>
-&nbsp;&nbsp;&nbsp;Modo de Usar: Aplicar pela manhã e reaplicar a cada 3 a 4 horas.<br/><br/>
-<strong>USO ORAL / NUTRACÊUTICOS:</strong><br/>
-3. [Inserir suplemento / nutracêutico / analgésico se necessário]<br/>
-&nbsp;&nbsp;&nbsp;Posologia: Tomar 1 cápsula/comprimido via oral a cada _____ horas.
-</div>
-
-<hr/>
-
-<p><strong>ORIENTAÇÕES GERAIS E CONTATO DE URGÊNCIA:</strong><br/>
-• Em caso de qualquer dúvida, reação inesperada ou necessidade de orientação pós-atendimento, entre em contato com nosso time clínico pelo WhatsApp: <strong>{{whatsapp}}</strong>.<br/>
-• Próxima consulta de retorno agendada para: ____/____/________.</p>
-`
   }
 ];
 

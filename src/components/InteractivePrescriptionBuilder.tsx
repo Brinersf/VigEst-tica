@@ -36,7 +36,7 @@ import {
   FileCheck2,
   ExternalLink
 } from 'lucide-react';
-import { DocumentItem } from '../types';
+import { DocumentItem, ClinicData } from '../types';
 import { PatientFormState } from '../utils/procedureClinicalDocsHelper';
 import {
   PROCEDURE_SCIENTIFIC_PRESCRIPTIONS,
@@ -122,16 +122,19 @@ export function generatePrescriptionMarkdown(
 interface InteractivePrescriptionBuilderProps {
   doc: DocumentItem;
   procedureContextKey: string;
-  clinicData: {
+  clinicData: Partial<ClinicData> & {
     nomeClinica?: string;
     responsavel?: string;
+    responsavelTecnico?: string;
     registroConselho?: string;
     conselhoEstado?: string;
     alvara?: string;
     endereco?: string;
     telefone?: string;
+    whatsapp?: string;
     nomeCliente?: string;
     telefoneCliente?: string;
+    [key: string]: any;
   };
   patientData: PatientFormState;
   onToast: (msg: string) => void;
@@ -165,7 +168,10 @@ export const InteractivePrescriptionBuilder: React.FC<InteractivePrescriptionBui
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.config) return parsed.config;
+        if (parsed.config) {
+          const isMock = parsed.config.prescriberName === 'Dra. Mariana Silva' || parsed.config.clinicName === 'Clínica Estética Avançada';
+          if (!isMock) return parsed.config;
+        }
       } catch (e) {
         console.error(e);
       }
@@ -174,17 +180,17 @@ export const InteractivePrescriptionBuilder: React.FC<InteractivePrescriptionBui
       patientName: patientData.nomeCliente || clinicData.nomeCliente || '',
       patientCpf: '',
       patientAgeOrDob: '',
-      patientPhone: patientData.telefone || clinicData.telefoneCliente || '',
+      patientPhone: patientData.telefone || clinicData.telefone || clinicData.whatsapp || '',
       patientAddress: '',
 
-      prescriberName: clinicData.responsavel || 'Dra. Mariana Silva',
-      prescriberTitle: 'Biomédica Esteta / Responsável Técnica',
-      prescriberCouncil: clinicData.registroConselho || 'CRBM 8421',
-      prescriberCouncilState: clinicData.conselhoEstado || 'SP',
-      clinicName: clinicData.nomeClinica || 'Clínica Estética Avançada',
-      clinicAddress: clinicData.endereco || 'Av. Paulista, 1000 - São Paulo/SP',
-      clinicPhone: clinicData.telefone || '(11) 99999-8888',
-      clinicAlvara: clinicData.alvara || 'CEVS 355030801-865-000123-1-0',
+      prescriberName: clinicData.responsavel || clinicData.responsavelTecnico || '',
+      prescriberTitle: '',
+      prescriberCouncil: clinicData.registroConselho || '',
+      prescriberCouncilState: clinicData.conselhoEstado || '',
+      clinicName: clinicData.nomeClinica || '',
+      clinicAddress: clinicData.endereco || '',
+      clinicPhone: clinicData.telefone || clinicData.whatsapp || '',
+      clinicAlvara: clinicData.alvara || '',
 
       issueDate: patientData.data || today,
       validityDays: '30 dias',

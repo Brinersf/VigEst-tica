@@ -9,6 +9,7 @@ import {
   Scale,
   Sparkles,
   Plus,
+  Download,
   Search,
   MoreVertical,
   CheckCircle2,
@@ -100,6 +101,7 @@ interface StepCategoriesViewProps {
   ) => void;
   onOpenClinicModal: () => void;
   onSwitchToBatchMode: () => void;
+  onDownloadAllHtml?: () => void;
   onToast: (msg: string) => void;
 }
 
@@ -115,6 +117,7 @@ export const StepCategoriesView: React.FC<StepCategoriesViewProps> = ({
   onDeleteCategory,
   onOpenClinicModal,
   onSwitchToBatchMode,
+  onDownloadAllHtml,
   onToast,
 }) => {
   // Custom categories state with localStorage persistence
@@ -1679,10 +1682,10 @@ export const StepCategoriesView: React.FC<StepCategoriesViewProps> = ({
       <DeleteCategoryModal
         isOpen={!!categoryToDelete}
         category={categoryToDelete}
-        categoryDocsCount={
-          categoryToDelete ? (docsByCategory.get(categoryToDelete.name) || []).length : 0
+        documentsInCategory={
+          categoryToDelete ? (docsByCategory.get(categoryToDelete.name) || []) : []
         }
-        allCategories={allCategories}
+        availableCategories={allCategories}
         onClose={() => setCategoryToDelete(null)}
         onConfirmDelete={(catName, deleteMode, targetCategoryName) => {
           handleConfirmDeleteCategory(catName, deleteMode, targetCategoryName);

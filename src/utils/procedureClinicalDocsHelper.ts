@@ -117,16 +117,16 @@ export const getInitialPatientState = (clinicData?: ClinicData): PatientFormStat
   const today = new Date().toISOString().split('T')[0];
   const formattedToday = today.split('-').reverse().join('/');
   return {
-    nomeCliente: 'Nome Completo do(a) Paciente',
-    cpfCliente: '',
+    nomeCliente: clinicData?.nomeCliente || '',
+    cpfCliente: clinicData?.cpfCliente || '',
     dataNascimento: '',
-    telefone: '(11) 99999-9999',
-    email: '',
-    endereco: '',
+    telefone: clinicData?.whatsapp || clinicData?.telefone || '',
+    email: clinicData?.email || '',
+    endereco: clinicData?.endereco || '',
     profissao: '',
     data: formattedToday,
-    profissionalResponsavel: clinicData?.responsavel || clinicData?.responsavelTecnico || 'Dr(a). Responsável Técnico',
-    registroProfissional: clinicData?.registroConselho || 'Conselho Regional nº 00000',
+    profissionalResponsavel: clinicData?.responsavel || clinicData?.responsavelTecnico || '',
+    registroProfissional: clinicData?.registroConselho || '',
   };
 };
 

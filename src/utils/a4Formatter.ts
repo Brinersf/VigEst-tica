@@ -11,23 +11,23 @@ export interface A4PageContent {
  */
 export function replaceClinicVariables(rawHtml: string, clinicData: ClinicData): string {
   if (!rawHtml) return '';
-  const nomeClinica = clinicData.nomeClinica || 'Clínica de Estética Integrada';
-  const responsavel = clinicData.responsavel || 'Dra. Responsável Técnica';
-  const registroConselho = clinicData.registroConselho || 'CRBM/CRM/COREN 00000';
-  const alvara = clinicData.alvara || '2026/VISA-BR';
-  const endereco = clinicData.endereco || 'Endereço Comercial';
-  const cidade = clinicData.cidade || 'São Paulo - SP';
-  const tel = clinicData.telefone || clinicData.whatsapp || '(11) 99999-9999';
-  const zap = clinicData.whatsapp || clinicData.telefone || '(11) 99999-9999';
-  const email = clinicData.email || 'contato@clinica.com.br';
-  const paciente = clinicData.nomeCliente || 'Nome do(a) Paciente';
-  const rg = clinicData.rgCliente || '00.000.000-0';
+  const nomeClinica = clinicData.nomeClinica || '{{nome_clinica}}';
+  const responsavel = clinicData.responsavel || clinicData.responsavelTecnico || '{{responsavel_tecnico}}';
+  const registroConselho = clinicData.registroConselho || '{{registro_conselho}}';
+  const alvara = clinicData.alvara || '{{alvara_sanitario}}';
+  const endereco = clinicData.endereco || '{{endereco}}';
+  const cidade = clinicData.cidade || '{{cidade}}';
+  const tel = clinicData.telefone || clinicData.whatsapp || '{{telefone}}';
+  const zap = clinicData.whatsapp || clinicData.telefone || '{{whatsapp}}';
+  const email = clinicData.email || '{{email}}';
+  const paciente = clinicData.nomeCliente || '{{nome_cliente}}';
+  const rg = clinicData.rgCliente || '{{rg_cliente}}';
   const data = clinicData.dataDocumento || new Date().toLocaleDateString('pt-BR');
-  const procedimento = clinicData.procedimento || 'Procedimento Estético';
-  const equipamento = clinicData.equipamento || 'Equipamento Eletromédico Homologado';
-  const registroAnvisa = clinicData.registroAnvisa || 'MS nº 80000000000';
-  const cnes = clinicData.cnes || '9876543';
-  const valor = clinicData.valorHonorarios || 'R$ 0,00';
+  const procedimento = clinicData.procedimento || '{{procedimento}}';
+  const equipamento = clinicData.equipamento || '{{equipamento}}';
+  const registroAnvisa = clinicData.registroAnvisa || '{{registro_anvisa}}';
+  const cnes = clinicData.cnes || '{{cnes}}';
+  const valor = clinicData.valorHonorarios || '{{valor_honorarios}}';
 
   let result = rawHtml
     // Clean up CNPJ tags and preceding/following labels
@@ -38,7 +38,7 @@ export function replaceClinicVariables(rawHtml: string, clinicData: ClinicData):
     .replace(/&bull;\s*CNPJ:\s*\{\{(?:cnpj|cnpj_clinica|cpf_cnpj)\}\}/gi, '')
     .replace(/CNPJ:\s*\{\{(?:cnpj|cnpj_clinica|cpf_cnpj)\}\}\s*&bull;/gi, '')
     .replace(/CNPJ:\s*\{\{(?:cnpj|cnpj_clinica|cpf_cnpj)\}\}/gi, '')
-    .replace(/\{\{(?:cnpj|cnpj_clinica|cpf_cnpj)\}\}/gi, '')
+    .replace(/\{\{(?:cnpj|cnpj_clinica|cpf_cnpj)\}\}/gi, clinicData.cnpj || '')
 
     // Clean up CPF tags and preceding/following labels
     .replace(/\|\s*<strong>CPF:<\/strong>[^|<br<\n]*/gi, '')
@@ -50,38 +50,68 @@ export function replaceClinicVariables(rawHtml: string, clinicData: ClinicData):
     .replace(/CPF:\s*\{\{(?:cpf_cliente|cpf_paciente|cpf)\}\}/gi, '')
     .replace(/inscrito\(a\) no CPF sob o nº\s*(?:<strong>)?\{\{(?:cpf_cliente|cpf_paciente|cpf)\}\}(?:<\/strong>)?,?/gi, '')
     .replace(/inscrito\(a\) no CPF sob o nº\s*(?:<strong>)?[0-9.\-]+(?:<\/strong>)?,?/gi, '')
-    .replace(/\{\{(?:cpf_cliente|cpf_paciente|cpf)\}\}/gi, '')
+    .replace(/\{\{(?:cpf_cliente|cpf_paciente|cpf)\}\}/gi, clinicData.cpfCliente || '');
 
-    // Clínica
-    .replace(/\{\{(?:nome_clinica|nome_da_clinica|clinica|razao_social|nome_fantasia)\}\}/gi, nomeClinica)
-    // CNES
-    .replace(/\{\{(?:cnes|numero_cnes|codigo_cnes)\}\}/gi, cnes)
-    // Responsável Técnico
-    .replace(/\{\{(?:responsavel_tecnico|responsavel|rt|nome_responsavel|responsavel_legal)\}\}/gi, responsavel)
-    // Registro Conselho
-    .replace(/\{\{(?:registro_conselho|registro_profissional|conselho_regional|conselho|crbm|crm|coren|crf|crefito)\}\}/gi, registroConselho)
-    // Alvará
-    .replace(/\{\{(?:alvara_sanitario|alvara|alvara_de_funcionamento|numero_alvara)\}\}/gi, alvara)
-    // Endereço
-    .replace(/\{\{(?:endereco|endereco_clinica|logradouro)\}\}/gi, endereco)
-    // Cidade / UF
-    .replace(/\{\{(?:cidade_uf|cidade|municipio|uf)\}\}/gi, cidade)
-    // Telefone e WhatsApp
-    .replace(/\{\{(?:telefone|celular|contato)\}\}/gi, tel)
-    .replace(/\{\{whatsapp\}\}/gi, zap)
-    // E-mail
-    .replace(/\{\{(?:email|email_clinica)\}\}/gi, email)
-    // Paciente
-    .replace(/\{\{(?:nome_cliente|paciente|nome_paciente|cliente)\}\}/gi, paciente)
-    .replace(/\{\{(?:rg_cliente|rg_paciente|rg)\}\}/gi, rg)
-    // Data
-    .replace(/\{\{(?:data|data_documento|data_atual|data_emissao)\}\}/gi, data)
-    // Procedimento & Equipamento
-    .replace(/\{\{(?:procedimento|nome_procedimento)\}\}/gi, procedimento)
-    .replace(/\{\{(?:equipamento|nome_equipamento|aparelho)\}\}/gi, equipamento)
-    .replace(/\{\{(?:registro_anvisa|anvisa_equipamento|registro_ms)\}\}/gi, registroAnvisa)
-    // Financeiro
-    .replace(/\{\{(?:valor|valor_honorarios|honorarios)\}\}/gi, valor);
+  // Clínica
+  if (clinicData.nomeClinica) {
+    result = result.replace(/\{\{(?:nome_clinica|nome_da_clinica|clinica|razao_social|nome_fantasia)\}\}/gi, nomeClinica);
+  }
+  // CNES
+  if (clinicData.cnes) {
+    result = result.replace(/\{\{(?:cnes|numero_cnes|codigo_cnes)\}\}/gi, cnes);
+  }
+  // Responsável Técnico
+  if (clinicData.responsavel || clinicData.responsavelTecnico) {
+    result = result.replace(/\{\{(?:responsavel_tecnico|responsavel|rt|nome_responsavel|responsavel_legal)\}\}/gi, responsavel);
+  }
+  // Registro Conselho
+  if (clinicData.registroConselho) {
+    result = result.replace(/\{\{(?:registro_conselho|registro_profissional|conselho_regional|conselho|crbm|crm|coren|crf|crefito)\}\}/gi, registroConselho);
+  }
+  // Alvará
+  if (clinicData.alvara) {
+    result = result.replace(/\{\{(?:alvara_sanitario|alvara|alvara_de_funcionamento|numero_alvara)\}\}/gi, alvara);
+  }
+  // Endereço
+  if (clinicData.endereco) {
+    result = result.replace(/\{\{(?:endereco|endereco_clinica|logradouro)\}\}/gi, endereco);
+  }
+  // Cidade / UF
+  if (clinicData.cidade) {
+    result = result.replace(/\{\{(?:cidade_uf|cidade|municipio|uf)\}\}/gi, cidade);
+  }
+  // Telefone e WhatsApp
+  if (clinicData.telefone || clinicData.whatsapp) {
+    result = result.replace(/\{\{(?:telefone|celular|contato)\}\}/gi, tel);
+    result = result.replace(/\{\{whatsapp\}\}/gi, zap);
+  }
+  // E-mail
+  if (clinicData.email) {
+    result = result.replace(/\{\{(?:email|email_clinica)\}\}/gi, email);
+  }
+  // Paciente
+  if (clinicData.nomeCliente) {
+    result = result.replace(/\{\{(?:nome_cliente|paciente|nome_paciente|cliente)\}\}/gi, paciente);
+  }
+  if (clinicData.rgCliente) {
+    result = result.replace(/\{\{(?:rg_cliente|rg_paciente|rg)\}\}/gi, rg);
+  }
+  // Data
+  result = result.replace(/\{\{(?:data|data_documento|data_atual|data_emissao)\}\}/gi, data);
+  // Procedimento & Equipamento
+  if (clinicData.procedimento) {
+    result = result.replace(/\{\{(?:procedimento|nome_procedimento)\}\}/gi, procedimento);
+  }
+  if (clinicData.equipamento) {
+    result = result.replace(/\{\{(?:equipamento|nome_equipamento|aparelho)\}\}/gi, equipamento);
+  }
+  if (clinicData.registroAnvisa) {
+    result = result.replace(/\{\{(?:registro_anvisa|anvisa_equipamento|registro_ms)\}\}/gi, registroAnvisa);
+  }
+  // Financeiro
+  if (clinicData.valorHonorarios) {
+    result = result.replace(/\{\{(?:valor|valor_honorarios|honorarios)\}\}/gi, valor);
+  }
 
   // Clean up any remaining double separators or orphan pipe dividers
   result = result
@@ -555,10 +585,10 @@ export function buildMultiPageA4Html(
                 <div class="a4-header-main-left">
                   ${logoHtml}
                   <div>
-                    <div class="a4-clinic-name">${clinicData.nomeClinica || 'CLÍNICA DE ESTÉTICA INTEGRADA'}</div>
+                    <div class="a4-clinic-name">${clinicData.nomeClinica || 'NOME DA SUA CLÍNICA'}</div>
                     <div class="a4-clinic-sub">
-                      <strong>Resp. Técnico:</strong> ${clinicData.responsavel || 'Homologado'} &bull; 
-                      <strong>Alvará Sanitário:</strong> ${clinicData.alvara || '2026/VISA'}
+                      <strong>Resp. Técnico:</strong> ${clinicData.responsavel || 'Responsável Técnico(a)'} &bull; 
+                      <strong>Alvará Sanitário:</strong> ${clinicData.alvara || 'Vigente / VISA'}
                     </div>
                   </div>
                 </div>
@@ -642,10 +672,10 @@ export function buildMultiPageA4Html(
               <div class="a4-header-main-left">
                 ${logoHtml}
                 <div>
-                  <div class="a4-clinic-name">${clinicData.nomeClinica || 'CLÍNICA DE ESTÉTICA INTEGRADA'}</div>
+                  <div class="a4-clinic-name">${clinicData.nomeClinica || 'NOME DA SUA CLÍNICA'}</div>
                   <div class="a4-clinic-sub">
-                    <strong>Resp. Técnico:</strong> ${clinicData.responsavel || 'Homologado'} &bull; 
-                    <strong>Alvará Sanitário:</strong> ${clinicData.alvara || '2026/VISA'}
+                    <strong>Resp. Técnico:</strong> ${clinicData.responsavel || 'Responsável Técnico(a)'} &bull; 
+                    <strong>Alvará Sanitário:</strong> ${clinicData.alvara || 'Vigente / VISA'}
                   </div>
                 </div>
               </div>

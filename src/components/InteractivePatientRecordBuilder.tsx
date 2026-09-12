@@ -176,8 +176,8 @@ export const InteractivePatientRecordBuilder: React.FC<InteractivePatientRecordB
 
     observacoesGerais: initialData?.observacoesGerais || '',
     dataAbertura: initialData?.dataAbertura || patient.data || new Date().toLocaleDateString('pt-BR'),
-    profissionalResponsavel: initialData?.profissionalResponsavel || patient.profissionalResponsavel || 'Dr(a). Responsável',
-    registroProfissional: initialData?.registroProfissional || patient.registroProfissional || 'Conselho Regional nº 00000',
+    profissionalResponsavel: initialData?.profissionalResponsavel || patient.profissionalResponsavel || '',
+    registroProfissional: initialData?.registroProfissional || patient.registroProfissional || '',
   }));
 
   const [activeStep, setActiveStep] = useState<number>(1);

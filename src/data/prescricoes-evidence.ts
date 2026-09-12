@@ -1126,49 +1126,6 @@ export const PRESCRICOES_CLINICAL_EVIDENCE: Record<string, ClinicalPrescriptionE
         studyType: 'Ensaio Clínico Controlado'
       }
     ]
-  },
-
-  // 12. Receituário Livre
-  'receituario-estetico-personalizavel-padrao': {
-    pharmacologicalRationale:
-      'O Receituário Clínico Estético é o instrumento legal e ético pelo qual o profissional habilitado (Médico, Farmacêutico Esteta, Biomédico Esteta, Enfermeiro Esteta ou Cirurgião-Dentista, conforme as prerrogativas de seus respectivos Conselhos de Classe e RDC 67/2007 ANVISA) prescreve substâncias de uso tópico, cosmecêuticos magistrais, nutracêuticos orais, fotoprotetores e protocolos de Home Care individualizados para o paciente. Todas as formulações personalizadas devem respeitar os limites de dosagem da Farmacopeia Brasileira, a estabilidade físico-química dos princípios ativos, a compatibilidade de pH dérmico e a ausência de interações medicamentosas com a terapia de base do paciente.',
-    therapeuticWindow:
-      'Em conformidade com as monografias farmacopeicas oficiais (Farmacopeia Brasileira, USP e Farmacopeia Europeia) e Resoluções vigentes da ANVISA e Conselhos Federais (CFBM, CFF, CFM, COFEN, CFO).',
-    levelOfEvidence: 'Nível I - A (Diretrizes Regulatórias ANVISA, Boas Práticas Magistrais RDC 67/2007 e Conselhos de Classe)',
-    clinicalValidationNotes:
-      'Ao redigir prescrições personalizadas, especifique sempre a concentração exata de cada princípio ativo em porcentagem (p/p ou p/v) ou miligramas (mg), o veículo adequado ao biotipo cutâneo (gel, sérum, creme lipofílico, loção oil-free ou cápsulas gastro-resistentes) e o modo de uso claro com posologia detalhada.',
-    contraindicationsAndWarnings: [
-      'Verificar histórico prévio de alergias medicamentosas, dermatite atópica e condições sistêmicas pré-existentes do paciente na ficha de anamnese antes de prescrever.',
-      'Respeitar as restrições de prescrição aplicáveis a gestantes, lactantes, hepatopatas e nefropatas crônicos.'
-    ],
-    activeIngredients: [
-      {
-        name: 'Princípios Ativos Magistrais Customizados',
-        concentrationOrDose: 'Conforme avaliação clínica individual do profissional',
-        mechanism: 'Mecanismo dependente dos ativos selecionados na conduta personalizada.',
-        targetOrRationale: 'Atendimento às necessidades específicas de cada paciente e fototipo.',
-        evidenceLevel: 'Consenso Farmacopeico / ANVISA',
-        keyReference: 'Farmacopeia Brasileira 6ª Edição e RDC 67/2007 ANVISA.'
-      }
-    ],
-    bibliographicReferences: [
-      {
-        authorYear: 'ANVISA - Agência Nacional de Vigilância Sanitária (2007)',
-        title: 'Resolução RDC nº 67/2007: Regulamento Técnico sobre Boas Práticas de Manipulação de Preparações Magistrais e Oficinais',
-        journalOrPublisher: 'Diário Oficial da União (DOU)',
-        doiOrPmid: 'RDC 67/2007 ANVISA',
-        evidenceSummary: 'Marco regulatório brasileiro que estabelece os padrões de qualidade, rastreabilidade e segurança para formulações magistrais.',
-        studyType: 'Norma Técnica Regulatória'
-      },
-      {
-        authorYear: 'Conselhos Federais de Saúde (CFBM / CFF / CFM / COFEN / CFO)',
-        title: 'Resoluções Normativas sobre Prescrição em Saúde Estética e Cosmetologia',
-        journalOrPublisher: 'Atos Normativos dos Conselhos Profissionais de Saúde',
-        doiOrPmid: 'Resoluções Profissionais de Saúde Estética',
-        evidenceSummary: 'Define os limites de atuação ética, farmacológica e legal de cada categoria profissional habilitada em procedimentos estéticos.',
-        studyType: 'Diretriz Deontológica e Legal'
-      }
-    ]
   }
 };
 

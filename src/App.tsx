@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, LogOut, Key, FileText, CheckCircle, Zap, CreditCard, Sparkles, Sliders, LayoutDashboard, ShoppingBag, ArrowLeft, Layers } from 'lucide-react';
+import { ShieldCheck, LogOut, Key, FileText, CheckCircle, Zap, CreditCard, Sparkles, Sliders, LayoutDashboard, ShoppingBag, ArrowLeft, Layers, Lock, DollarSign, Share2 } from 'lucide-react';
 import { DocumentItem, ClinicData, PlanType, PaymentDetails } from './types';
 import { INITIAL_DOCUMENTS } from './data/documents';
 import { SalesLandingPage } from './components/SalesLandingPage';
 import { ClinicHubDashboard } from './components/ClinicHubDashboard';
 import { DocumentEditor } from './components/DocumentEditor';
 import { ClinicProfileModal } from './components/ClinicProfileModal';
-import { MercadoPagoConfigModal } from './components/MercadoPagoConfigModal';
+import { KiwifyDeliveryModal } from './components/KiwifyDeliveryModal';
 import { replaceClinicVariables } from './utils/a4Formatter';
 import { PatientInteractivePortal } from './components/PatientInteractivePortal';
 import {
@@ -45,37 +45,109 @@ export default function App() {
     }
   };
 
-  // Ultra-modern sales landing page is the entry page as requested
-  const [view, setView] = useState<'landing' | 'hub' | 'editor'>('landing');
-  const [plan, setPlan] = useState<PlanType>('completo');
+  // Payment status state: checks for Kiwify URL parameters or existing persistence
+  const [isPaid, setIsPaid] = useState<boolean>(() => {
+    try {
+      // Clear legacy development test keys so user is NOT unlocked by default
+      localStorage.removeItem('vigi_mp_paid');
+      localStorage.removeItem('vigi_custom_unlocked');
+
+      const params = new URLSearchParams(window.location.search);
+
+      // Support instant lock/reset via ?sair=1 or ?reset=1
+      if (params.get('reset') === '1' || params.get('sair') === '1' || params.get('bloquear') === '1') {
+        localStorage.removeItem('vigi_kiwify_paid_v3');
+        return false;
+      }
+
+      const token = params.get('token');
+      const chave = params.get('chave') || params.get('key');
+
+      // Check official secure Kiwify token or owner master key
+      const isOfficialKiwifyToken = token === 'vigi_kw_7a8f9c2d1b4e' || token === 'vigi_kw_secret_2025';
+      const isMasterAdminKey = chave === 'VIGI-ESTETICA-PRO-2025' || chave === 'VIGI-MASTER-VIP';
+
+      if (isOfficialKiwifyToken || isMasterAdminKey) {
+        localStorage.setItem('vigi_kiwify_paid_v3', 'true');
+        localStorage.setItem('vigi_mp_plan', 'completo');
+        return true;
+      }
+
+      return localStorage.getItem('vigi_kiwify_paid_v3') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  // App views: 'landing' (Página de Vendas) | 'hub' (Editor de Cards / Painel) | 'editor' (Editor de Documento A4)
+  const [view, setView] = useState<'landing' | 'hub' | 'editor'>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+
+      if (params.get('reset') === '1' || params.get('sair') === '1' || params.get('bloquear') === '1') {
+        return 'landing';
+      }
+
+      const token = params.get('token');
+      const chave = params.get('chave') || params.get('key');
+      const isOfficialKiwifyToken = token === 'vigi_kw_7a8f9c2d1b4e' || token === 'vigi_kw_secret_2025';
+      const isMasterAdminKey = chave === 'VIGI-ESTETICA-PRO-2025' || chave === 'VIGI-MASTER-VIP';
+
+      if (isOfficialKiwifyToken || isMasterAdminKey) {
+        return 'hub';
+      }
+
+      const alreadyPaid = localStorage.getItem('vigi_kiwify_paid_v3') === 'true';
+      if (alreadyPaid && params.get('home') !== '1') {
+        return 'hub';
+      }
+    } catch {}
+    return 'landing';
+  });
+  const [plan, setPlan] = useState<PlanType>(() => {
+    try {
+      return (localStorage.getItem('vigi_mp_plan') as PlanType) || 'completo';
+    } catch {
+      return 'completo';
+    }
+  });
+
   const [clinicData, setClinicData] = useState<ClinicData>(() => {
     const saved = localStorage.getItem('vigi_mp_clinic');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        const isOldMock =
+          parsed.responsavel === 'Dra. Camila R. Andrade' ||
+          parsed.nomeCliente === 'Ana Paula Vasconcelos' ||
+          parsed.nomeClinica === 'Sua Clínica - Estética Avançada' ||
+          parsed.cnpj === '42.318.920/0001-84';
+        if (!isOldMock) {
+          return parsed;
+        }
       } catch (e) {
         console.error('Failed to parse clinic data', e);
       }
     }
     return {
-      nomeClinica: 'Sua Clínica - Estética Avançada',
-      cnpj: '42.318.920/0001-84',
-      cnes: '9876543',
-      responsavel: 'Dra. Camila R. Andrade',
-      registroConselho: 'Médica CRM-SP 124580',
-      alvara: 'ALV-2025-VISA-SP-98765',
-      nomeCliente: 'Ana Paula Vasconcelos',
-      cpfCliente: '123.456.789-00',
-      email: 'contato.bsestetica@gmail.com',
-      whatsapp: '(11) 98765-4321',
-      endereco: 'Rua das Palmeiras, 342 - Sala 08 - Jardim Paulista, São Paulo - SP, CEP 01423-010',
-      cidade: 'São Paulo - SP',
-      rgCliente: '12.345.678-9 SSP/SP',
+      nomeClinica: '',
+      cnpj: '',
+      cnes: '',
+      responsavel: '',
+      registroConselho: '',
+      alvara: '',
+      nomeCliente: '',
+      cpfCliente: '',
+      email: '',
+      whatsapp: '',
+      endereco: '',
+      cidade: '',
+      rgCliente: '',
       dataDocumento: new Date().toLocaleDateString('pt-BR'),
-      procedimento: 'Procedimentos Estéticos Faciais, Corporais e Capilares',
-      equipamento: 'Equipamento Eletromédico Homologado ANVISA',
-      registroAnvisa: 'MS nº 80000000000',
-      valorHonorarios: 'R$ 1.500,00',
+      procedimento: '',
+      equipamento: '',
+      registroAnvisa: '',
+      valorHonorarios: '',
       customVariables: {},
     };
   });
@@ -135,20 +207,66 @@ export default function App() {
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
+    setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const handleApprovedPayment = (approvedPlan: PlanType, clinic: ClinicData, payment: PaymentDetails) => {
-    setPlan(approvedPlan);
-    setClinicData((prev) => ({ ...prev, ...clinic }));
+  // Check token or email on load with server verification
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      const email = params.get('email');
+      const chave = params.get('chave') || params.get('key');
+
+      if (
+        token === 'vigi_kw_7a8f9c2d1b4e' ||
+        token === 'vigi_kw_secret_2025' ||
+        chave === 'VIGI-ESTETICA-PRO-2025' ||
+        chave === 'VIGI-MASTER-VIP'
+      ) {
+        showToast('🎉 Pagamento Confirmado na Kiwify! Seu acesso ao Vigiestética está 100% liberado.');
+      } else if (email && !isPaid) {
+        // Query backend to verify if this email was actually paid via Kiwify webhook
+        fetch('/api/kiwify/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.authorized) {
+              setIsPaid(true);
+              setView('hub');
+              localStorage.setItem('vigi_kiwify_paid_v3', 'true');
+              showToast(`🎉 Bem-vindo(a)! Compra aprovada na Kiwify confirmada.`);
+            }
+          })
+          .catch(() => {});
+      }
+    } catch {}
+  }, [isPaid]);
+
+  // Barrier: only allow access to Hub or Editor if paid
+  useEffect(() => {
+    if (!isPaid && (view === 'hub' || view === 'editor')) {
+      setView('landing');
+    }
+  }, [isPaid, view]);
+
+  // Action to access editor
+  const handleAccessEditor = () => {
+    if (!isPaid) {
+      setView('landing');
+      setTimeout(() => {
+        const elem = document.getElementById('pagamento');
+        if (elem) {
+          elem.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+      showToast('🔒 O software completo requer confirmação de pagamento. Adquira na seção abaixo.');
+      return;
+    }
     setView('hub');
-
-    localStorage.setItem('vigi_mp_paid', 'true');
-    localStorage.setItem('vigi_mp_plan', approvedPlan);
-    localStorage.setItem('vigi_mp_clinic', JSON.stringify(clinic));
-    localStorage.setItem('vigi_mp_payment_id', payment.id);
-
-    showToast('🎉 Acesso Liberado! Bem-vindo(a) ao Painel de Documentos e POPs da sua Clínica.');
   };
 
   const handleUpdateDocContent = (id: string, newContent: string) => {
@@ -290,33 +408,19 @@ export default function App() {
       saveCustomCategories(filteredCustom);
     }
 
-    // 2. Handle documents in this category
     if (deleteMode === 'deleteDocs') {
       const docsToDelete = documents.filter((d) => getStepCategoryForDocument(d) === catName);
       const idsToDelete = docsToDelete.map((d) => d.id);
       if (idsToDelete.length > 0) {
-        const deletedIds = getDeletedDocIds();
-        saveDeletedDocIds(Array.from(new Set([...deletedIds, ...idsToDelete])));
-        setDocuments((prev) => {
-          const remaining = prev.filter((d) => !idsToDelete.includes(d.id));
-          try {
-            localStorage.setItem('vigi_custom_docs', JSON.stringify(remaining));
-          } catch (e) {}
-          return remaining;
-        });
+        handleDeleteMultipleDocs(idsToDelete);
       }
-      showToast(`Categoria "${catName}" e seus ${docsToDelete.length} cards foram excluídos com sucesso.`);
+      showToast(`Categoria "${catName}" e seus ${idsToDelete.length} documento(s) foram excluídos.`);
     } else {
-      // Move documents to target category
       const targetCat = targetCategoryName || '1. Documentos Base e ANVISA';
       setDocuments((prev) => {
         const updated = prev.map((doc) => {
           if (getStepCategoryForDocument(doc) === catName) {
-            return {
-              ...doc,
-              stepCategory: targetCat,
-              lastModified: new Date().toISOString().split('T')[0],
-            };
+            return { ...doc, stepCategory: targetCat };
           }
           return doc;
         });
@@ -356,25 +460,47 @@ export default function App() {
     );
   }
 
-  // If on landing view, render the Ultra-Modern Sales Page directly
+  // View 1: PÁGINA DE VENDAS / APRESENTAÇÃO
   if (view === 'landing') {
     return (
       <>
         <SalesLandingPage
-          onApproved={handleApprovedPayment}
+          onAccessEditor={handleAccessEditor}
+          isPaid={isPaid}
+          onUnlockPaid={() => {
+            setIsPaid(true);
+            try {
+              localStorage.setItem('vigi_kiwify_paid_v3', 'true');
+              localStorage.setItem('vigi_mp_plan', 'completo');
+            } catch {}
+            showToast('🎉 Acesso Liberado com Sucesso! Bem-vindo(a) ao Vigiestética.');
+          }}
           onOpenConfig={() => setIsConfigModalOpen(true)}
-          onDirectAccess={() => setView('hub')}
           currentClinicData={clinicData}
+          documents={documents}
         />
 
-        <MercadoPagoConfigModal
+        <KiwifyDeliveryModal
           isOpen={isConfigModalOpen}
           onClose={() => setIsConfigModalOpen(false)}
-          onSaved={() => showToast('Configurações do Mercado Pago salvas!')}
+          isPaid={isPaid}
+          onToggleTestAccess={(unlock) => {
+            setIsPaid(unlock);
+            if (unlock) {
+              localStorage.setItem('vigi_kiwify_paid_v3', 'true');
+              setView('hub');
+              showToast('🔓 Modo de Teste: Acesso Total Liberado!');
+            } else {
+              localStorage.removeItem('vigi_kiwify_paid_v3');
+              setView('landing');
+              showToast('🔒 Modo Visitante: Visualizando como comprador não pago.');
+            }
+          }}
+          onToast={showToast}
         />
 
         {toastMessage && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#1C1C1C] border border-[#00D3A1] text-white px-5 py-2.5 rounded-full text-[13px] font-bold shadow-2xl z-50 animate-[slideUp_0.2s_ease] flex items-center gap-2">
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#081832] border border-[#00D3A1] text-white px-5 py-2.5 rounded-full text-[13px] font-bold shadow-2xl z-50 animate-[slideUp_0.2s_ease] flex items-center gap-2">
             <CheckCircle className="w-4 h-4 text-[#00D3A1]" />
             {toastMessage}
           </div>
@@ -383,7 +509,7 @@ export default function App() {
     );
   }
 
-  // If on hub view (1-Click Data Entry + Card Selection & Customization)
+  // View 2: HUB / PAINEL DE CARDS (Editor da Clínica)
   if (view === 'hub') {
     return (
       <>
@@ -463,10 +589,23 @@ export default function App() {
           onToast={showToast}
         />
 
-        <MercadoPagoConfigModal
+        <KiwifyDeliveryModal
           isOpen={isConfigModalOpen}
           onClose={() => setIsConfigModalOpen(false)}
-          onSaved={() => showToast('Configurações do Mercado Pago salvas!')}
+          isPaid={isPaid}
+          onToggleTestAccess={(unlock) => {
+            setIsPaid(unlock);
+            if (unlock) {
+              localStorage.setItem('vigi_kiwify_paid_v3', 'true');
+              setView('hub');
+              showToast('🔓 Modo de Teste: Acesso Total Liberado!');
+            } else {
+              localStorage.removeItem('vigi_kiwify_paid_v3');
+              setView('landing');
+              showToast('🔒 Modo Visitante: Visualizando como comprador não pago.');
+            }
+          }}
+          onToast={showToast}
         />
 
         {toastMessage && (
@@ -479,7 +618,7 @@ export default function App() {
     );
   }
 
-  // If on editor view
+  // View 4: EDITOR A4 DE DOCUMENTO
   return (
     <div className="min-h-screen bg-[#061224] text-[#F0F6FF] flex flex-col font-sans">
       {/* Top Header Bar for Editor */}
@@ -516,6 +655,20 @@ export default function App() {
 
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button
+            type="button"
+            onClick={() => {
+              const deliveryUrl = window.location.origin;
+              navigator.clipboard.writeText(deliveryUrl);
+              showToast('🔗 Link copiado! Cole na Kiwify como URL de Entrega do seu produto.');
+            }}
+            className="h-8 px-2 sm:px-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-black font-extrabold text-[11px] transition flex items-center gap-1 active:scale-95 cursor-pointer shadow-sm shadow-emerald-500/20"
+            title="Copiar URL para colar na entrega da Kiwify"
+          >
+            <Share2 className="w-3.5 h-3.5 text-black stroke-[2.5]" />
+            <span className="hidden md:inline">Copiar Link Kiwify</span>
+          </button>
+
+          <button
             onClick={() => setIsClinicModalOpen(true)}
             className="h-8 px-2.5 sm:px-3 rounded-xl bg-gradient-to-r from-[#00D3A1]/20 to-[#00B1EA]/20 hover:from-[#00D3A1]/30 hover:to-[#00B1EA]/30 border border-[#00D3A1]/60 text-[11px] text-white transition font-black flex items-center gap-1.5 active:scale-95 cursor-pointer shadow-sm shadow-[#00D3A1]/10"
             title="Editar dados da clínica cadastrados"
@@ -527,20 +680,20 @@ export default function App() {
 
           <button
             onClick={() => setIsConfigModalOpen(true)}
-            className="h-8 px-2 sm:px-2.5 rounded-xl bg-[#0E274D] border border-[#1E4477] text-[11px] text-[#94A3B8] hover:text-white hover:bg-[#153868] transition flex items-center gap-1 active:scale-95 cursor-pointer"
-            title="Configurações do Mercado Pago"
+            className="h-8 px-2 sm:px-2.5 rounded-xl bg-[#0A1D3A] border border-emerald-500/50 hover:border-emerald-400 text-[11px] text-white font-bold hover:bg-[#0E274D] transition flex items-center gap-1 active:scale-95 cursor-pointer"
+            title="Instruções e Link de Entrega na Kiwify"
           >
-            <Key className="w-3.5 h-3.5 text-[#00D3A1]" />
-            <span className="hidden md:inline">Mercado Pago</span>
+            <DollarSign className="w-3.5 h-3.5 text-emerald-400 stroke-[2.5]" />
+            <span className="hidden md:inline">Instruções Kiwify</span>
           </button>
 
           <button
             onClick={() => setView('landing')}
             className="h-8 px-2 sm:px-2.5 rounded-xl bg-[#00D3A1]/10 hover:bg-[#00D3A1]/20 border border-[#00D3A1]/40 text-[11px] font-bold text-[#00D3A1] hover:text-white transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
-            title="Ver Página de Vendas"
+            title="Ver Apresentação Informativa"
           >
             <ShoppingBag className="w-3.5 h-3.5 text-[#00D3A1]" />
-            <span className="hidden sm:inline">Vendas</span>
+            <span className="hidden sm:inline">Informativo</span>
           </button>
         </div>
       </header>
@@ -580,10 +733,23 @@ export default function App() {
         }}
       />
 
-      <MercadoPagoConfigModal
+      <KiwifyDeliveryModal
         isOpen={isConfigModalOpen}
         onClose={() => setIsConfigModalOpen(false)}
-        onSaved={() => showToast('Configurações do Mercado Pago salvas!')}
+        isPaid={isPaid}
+        onToggleTestAccess={(unlock) => {
+          setIsPaid(unlock);
+          if (unlock) {
+            localStorage.setItem('vigi_kiwify_paid_v3', 'true');
+            setView('hub');
+            showToast('🔓 Modo de Teste: Acesso Total Liberado!');
+          } else {
+            localStorage.removeItem('vigi_kiwify_paid_v3');
+            setView('landing');
+            showToast('🔒 Modo Visitante: Visualizando como comprador não pago.');
+          }
+        }}
+        onToast={showToast}
       />
 
       {/* Toast Notification */}
@@ -596,5 +762,3 @@ export default function App() {
     </div>
   );
 }
-
-

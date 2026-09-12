@@ -28,10 +28,14 @@ import {
   Upload,
   Trash2,
   Eye,
-  RefreshCw
+  RefreshCw,
+  Lock,
+  DollarSign,
+  Share2,
+  Link as LinkIcon
 } from 'lucide-react';
 import { DocumentItem, ClinicData } from '../types';
-import { replaceClinicVariables } from '../utils/a4Formatter';
+import { replaceClinicVariables, buildAllDocumentsBundleHtml } from '../utils/a4Formatter';
 import { StepCategoriesView } from './StepCategoriesView';
 import {
   ClinicalDocType,
@@ -61,6 +65,7 @@ interface ClinicHubDashboardProps {
   onBackToSales?: () => void;
   onOpenConfigModal?: () => void;
   onOpenConfig?: () => void;
+  onResetVisitorMode?: () => void;
   onToast: (msg: string) => void;
 }
 
@@ -135,6 +140,7 @@ export const ClinicHubDashboard: React.FC<ClinicHubDashboardProps> = ({
   onBackToSales,
   onOpenConfigModal,
   onOpenConfig,
+  onResetVisitorMode,
   onToast,
 }) => {
   const [activeStep, setActiveStep] = useState<'dados' | 'personalizar' | 'documentos'>('dados');
@@ -275,6 +281,27 @@ export const ClinicHubDashboard: React.FC<ClinicHubDashboardProps> = ({
 
   const currentThemeColor = formData.themeColor || '#00D3A1';
 
+  const handleDownloadAllHtml = () => {
+    onToast('Gerando compêndio completo com todos os documentos em HTML...');
+    try {
+      const fullHtml = buildAllDocumentsBundleHtml(documents, formData);
+      const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const clinicSlug = (formData.nomeClinica || 'clinica_estetica')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/gi, '_');
+      a.download = `pasta_completa_${documents.length}_documentos_${clinicSlug}.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+      onToast(`✅ Compêndio completo com ${documents.length} documentos baixado com sucesso em HTML!`);
+    } catch (err) {
+      console.error('Erro ao baixar compêndio:', err);
+      onToast('Erro ao gerar arquivo HTML dos documentos.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#061224] text-[#F5F5F5] flex flex-col font-sans">
       {/* Top Header Simplificado e Elegante */}
@@ -305,23 +332,15 @@ export const ClinicHubDashboard: React.FC<ClinicHubDashboardProps> = ({
         </div>
 
         {/* Header Actions */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap justify-end">
+        <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={handleGoToConfig}
-            className="h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-[#0A1D3A] border border-[#173660] text-[11px] text-[#8DA0BF] hover:text-white hover:bg-[#0E274D] transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
-            title="Configurações do Mercado Pago"
-          >
-            <Key className="w-3.5 h-3.5 text-[#00D3A1]" />
-            <span className="hidden lg:inline">Mercado Pago</span>
-          </button>
-
-          <button
+            type="button"
             onClick={handleGoToSales}
-            className="h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-xl bg-[#00D3A1]/10 hover:bg-[#00D3A1]/20 border border-[#00D3A1]/40 text-[11px] font-bold text-[#00D3A1] hover:text-white transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
-            title="Ver Página de Vendas"
+            className="h-8 sm:h-9 px-3 rounded-xl bg-[#0A1D3A] hover:bg-[#0E274D] border border-[#173660] text-[11.5px] font-bold text-[#8DA0BF] hover:text-white transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
+            title="Ver Página de Apresentação"
           >
             <ShoppingBag className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Página de Vendas</span>
+            <span>Página Inicial</span>
           </button>
         </div>
       </header>
@@ -919,6 +938,7 @@ export const ClinicHubDashboard: React.FC<ClinicHubDashboardProps> = ({
                   else setActiveStep('dados');
                 }}
                 onSwitchToBatchMode={() => setDashboardViewMode('batch')}
+                onDownloadAllHtml={handleDownloadAllHtml}
                 onToast={onToast}
               />
             ) : (
@@ -949,6 +969,16 @@ export const ClinicHubDashboard: React.FC<ClinicHubDashboardProps> = ({
 
                   {/* Botões de Ação em Lote */}
                   <div className="flex items-center gap-2 w-full md:w-auto flex-wrap">
+                    <button
+                      type="button"
+                      onClick={handleDownloadAllHtml}
+                      className="h-9 px-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-500/50 text-emerald-300 hover:text-white text-[12px] font-bold flex items-center gap-1.5 transition active:scale-95 cursor-pointer shadow-sm"
+                      title="Baixar compêndio com todos os documentos formatados em HTML A4"
+                    >
+                      <Download className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Baixar Todos (HTML)</span>
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => setDashboardViewMode('categories')}

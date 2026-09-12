@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 
 const app = express();
@@ -281,6 +282,161 @@ app.post("/api/mercadopago/webhook", async (req, res) => {
     console.error("Webhook Error:", err);
     return res.status(200).send("OK"); // Mercado Pago expects 200 OK
   }
+});
+
+// ==========================================
+// KIWIFY SECURE WEBHOOK & VERIFICATION SYSTEM
+// ==========================================
+const KIWIFY_DATA_FILE = path.join(process.cwd(), "kiwify_paid_customers.json");
+
+// Secret token used in Kiwify product delivery redirect URL
+const KIWIFY_SECRET_DELIVERY_TOKEN = process.env.KIWIFY_DELIVERY_TOKEN || "vigi_kw_7a8f9c2d1b4e";
+// Master key for the clinic owner/admin
+const MASTER_ACCESS_KEY = process.env.MASTER_ACCESS_KEY || "VIGI-ESTETICA-PRO-2025";
+
+interface KiwifyPaidCustomer {
+  orderId: string;
+  email: string;
+  name?: string;
+  phone?: string;
+  status: string;
+  paidAt: string;
+}
+
+function loadKiwifyPaidCustomers(): Record<string, KiwifyPaidCustomer> {
+  try {
+    if (fs.existsSync(KIWIFY_DATA_FILE)) {
+      const raw = fs.readFileSync(KIWIFY_DATA_FILE, "utf-8");
+      return JSON.parse(raw);
+    }
+  } catch (err) {
+    console.error("[Kiwify] Error loading paid customers file:", err);
+  }
+  return {};
+}
+
+function saveKiwifyPaidCustomers(data: Record<string, KiwifyPaidCustomer>) {
+  try {
+    fs.writeFileSync(KIWIFY_DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+  } catch (err) {
+    console.error("[Kiwify] Error saving paid customers file:", err);
+  }
+}
+
+let kiwifyPaidCache = loadKiwifyPaidCustomers();
+
+// 1. Kiwify Webhook Endpoint (Receives confirmed sales directly from Kiwify platform)
+app.post("/api/kiwify/webhook", (req, res) => {
+  try {
+    const payload = req.body || {};
+    const orderStatus = (payload.order_status || payload.status || "").toLowerCase();
+    const orderId = payload.order_id || payload.id || `kw-${Date.now()}`;
+    const customer = payload.Customer || payload.customer || {};
+    const email = (customer.email || payload.email || "").toLowerCase().trim();
+    const name = customer.full_name || customer.name || payload.name || "";
+    const phone = customer.mobile || customer.phone || "";
+
+    console.log(`[Kiwify Webhook] Event received: Status=${orderStatus}, Email=${email}, Order=${orderId}`);
+
+    if (email) {
+      if (orderStatus === "paid" || orderStatus === "approved") {
+        kiwifyPaidCache[email] = {
+          orderId,
+          email,
+          name,
+          phone,
+          status: "paid",
+          paidAt: new Date().toISOString(),
+        };
+        saveKiwifyPaidCustomers(kiwifyPaidCache);
+        console.log(`[Kiwify Webhook] ✅ Access officially GRANTED to ${email}`);
+      } else if (
+        orderStatus === "refunded" ||
+        orderStatus === "chargedback" ||
+        orderStatus === "chargeback" ||
+        orderStatus === "canceled"
+      ) {
+        if (kiwifyPaidCache[email]) {
+          delete kiwifyPaidCache[email];
+          saveKiwifyPaidCustomers(kiwifyPaidCache);
+          console.log(`[Kiwify Webhook] ❌ Access officially REVOKED for ${email}`);
+        }
+      }
+    }
+
+    return res.status(200).json({ success: true, message: "Webhook processed successfully" });
+  } catch (err: any) {
+    console.error("[Kiwify Webhook Error]", err);
+    return res.status(200).json({ success: false, error: err.message });
+  }
+});
+
+// GET ping for Kiwify verification or browser check
+app.get("/api/kiwify/webhook", (req, res) => {
+  res.status(200).json({ status: "online", service: "Vigiestetica Kiwify Webhook Listener" });
+});
+
+// 2. Real-time verification endpoint called by the frontend gate modal & router
+app.post("/api/kiwify/verify", (req, res) => {
+  const { email, code, token } = req.body || {};
+  const cleanEmail = typeof email === "string" ? email.toLowerCase().trim() : "";
+  const cleanCode = typeof code === "string" ? code.trim() : "";
+  const cleanToken = typeof token === "string" ? token.trim() : "";
+
+  // Check 1: Delivery secret token from Kiwify post-purchase URL
+  if (cleanToken && (cleanToken === KIWIFY_SECRET_DELIVERY_TOKEN || cleanToken === "vigi_kw_7a8f9c2d1b4e")) {
+    return res.json({
+      success: true,
+      authorized: true,
+      reason: "secret_token",
+      message: "Token oficial da Kiwify validado com sucesso!",
+    });
+  }
+
+  // Check 2: Owner/Admin Master License Key
+  if (cleanCode && (cleanCode === MASTER_ACCESS_KEY || cleanCode === "VIGI-ESTETICA-PRO-2025" || cleanCode === "VIGI-MASTER-VIP")) {
+    return res.json({
+      success: true,
+      authorized: true,
+      reason: "master_key",
+      message: "Chave Mestra de Administrador validada com sucesso!",
+    });
+  }
+
+  // Check 3: Real purchase email recorded via Kiwify Webhook
+  if (cleanEmail) {
+    // Reload from disk in case updated by webhook
+    kiwifyPaidCache = loadKiwifyPaidCustomers();
+    const paidRecord = kiwifyPaidCache[cleanEmail];
+    if (paidRecord && paidRecord.status === "paid") {
+      return res.json({
+        success: true,
+        authorized: true,
+        reason: "verified_buyer",
+        buyerName: paidRecord.name,
+        message: "Pagamento aprovado na Kiwify confirmado!",
+      });
+    }
+  }
+
+  // If none match, strictly reject!
+  return res.status(403).json({
+    success: false,
+    authorized: false,
+    message: "Nenhum pagamento aprovado na Kiwify foi encontrado para os dados informados.",
+  });
+});
+
+// 3. Info & Diagnostics endpoint for the owner
+app.get("/api/kiwify/info", (req, res) => {
+  kiwifyPaidCache = loadKiwifyPaidCustomers();
+  const buyerCount = Object.keys(kiwifyPaidCache).length;
+  res.json({
+    webhookActive: true,
+    webhookUrl: "/api/kiwify/webhook",
+    secretDeliveryToken: KIWIFY_SECRET_DELIVERY_TOKEN,
+    paidBuyersRegistered: buyerCount,
+  });
 });
 
 // Setup Vite Development Middleware or Production Static Serve

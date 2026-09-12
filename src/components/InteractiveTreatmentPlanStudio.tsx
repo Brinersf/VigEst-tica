@@ -140,12 +140,12 @@ export const InteractiveTreatmentPlanStudio: React.FC<InteractiveTreatmentPlanSt
   const [currentDrawing, setCurrentDrawing] = useState<TreatmentPlanAnnotation | null>(null);
 
   // Lateral Clinical Notes & Data State
-  const [productBrand, setProductBrand] = useState<string>(initialData?.productBrand || 'Botox® / Dysport / Juvederm');
-  const [productBatch, setProductBatch] = useState<string>(initialData?.productBatch || 'LOT-2026/A9');
-  const [productExpiration, setProductExpiration] = useState<string>(initialData?.productExpiration || '12/2027');
-  const [productDilution, setProductDilution] = useState<string>(initialData?.productDilution || '1.0 ml SF 0.9% (2.0 ml estéril)');
-  const [cannulaNeedle, setCannulaNeedle] = useState<string>(initialData?.cannulaNeedle || 'Agulha 30G 4mm / Cânula 22G');
-  const [anatomicalPlane, setAnatomicalPlane] = useState<string>(initialData?.anatomicalPlane || 'Intramuscular / Subdérmico');
+  const [productBrand, setProductBrand] = useState<string>(initialData?.productBrand || '');
+  const [productBatch, setProductBatch] = useState<string>(initialData?.productBatch || '');
+  const [productExpiration, setProductExpiration] = useState<string>(initialData?.productExpiration || '');
+  const [productDilution, setProductDilution] = useState<string>(initialData?.productDilution || '');
+  const [cannulaNeedle, setCannulaNeedle] = useState<string>(initialData?.cannulaNeedle || '');
+  const [anatomicalPlane, setAnatomicalPlane] = useState<string>(initialData?.anatomicalPlane || '');
   const [revisitDate, setRevisitDate] = useState<string>(initialData?.revisitDate || '15 a 21 dias');
 
   // Muscle Dosages Table
@@ -546,19 +546,21 @@ export const InteractiveTreatmentPlanStudio: React.FC<InteractiveTreatmentPlanSt
 
     // 1. Render Background (Custom Patient Photo or Preset)
     if (patientPhotoUrl) {
-      const img = new Image();
+      const img = document.createElement('img');
       img.src = patientPhotoUrl;
-      if (img.complete) {
+      if (img.complete && img.naturalWidth > 0) {
         // Draw image keeping aspect ratio centered
-        const hRatio = width / img.width;
-        const vRatio = height / img.height;
+        const imgWidth = img.naturalWidth || img.width;
+        const imgHeight = img.naturalHeight || img.height;
+        const hRatio = width / imgWidth;
+        const vRatio = height / imgHeight;
         const ratio = Math.min(hRatio, vRatio);
-        const centerShiftX = (width - img.width * ratio) / 2;
-        const centerShiftY = (height - img.height * ratio) / 2;
+        const centerShiftX = (width - imgWidth * ratio) / 2;
+        const centerShiftY = (height - imgHeight * ratio) / 2;
 
         ctx.fillStyle = '#0f172a';
         ctx.fillRect(0, 0, width, height);
-        ctx.drawImage(img, 0, 0, img.width, img.height, centerShiftX, centerShiftY, img.width * ratio, img.height * ratio);
+        ctx.drawImage(img, 0, 0, imgWidth, imgHeight, centerShiftX, centerShiftY, imgWidth * ratio, imgHeight * ratio);
       } else {
         img.onload = () => redrawCanvas();
       }
@@ -728,7 +730,7 @@ export const InteractiveTreatmentPlanStudio: React.FC<InteractiveTreatmentPlanSt
 
   // Mouse Handlers for Drawing & Panning
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (selectedTool === 'pan' || e.button === 1 || e.spaceKey) {
+    if (selectedTool === 'pan' || e.button === 1 || (e.nativeEvent as any).spaceKey || e.altKey) {
       setIsPanning(true);
       setPanStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
       return;
@@ -852,16 +854,18 @@ export const InteractiveTreatmentPlanStudio: React.FC<InteractiveTreatmentPlanSt
 
     // Fill background
     if (patientPhotoUrl) {
-      const img = new Image();
+      const img = document.createElement('img');
       img.src = patientPhotoUrl;
-      const hRatio = width / img.width;
-      const vRatio = height / img.height;
+      const imgWidth = img.naturalWidth || img.width || 1000;
+      const imgHeight = img.naturalHeight || img.height || 900;
+      const hRatio = width / imgWidth;
+      const vRatio = height / imgHeight;
       const ratio = Math.min(hRatio, vRatio);
-      const centerShiftX = (width - img.width * ratio) / 2;
-      const centerShiftY = (height - img.height * ratio) / 2;
+      const centerShiftX = (width - imgWidth * ratio) / 2;
+      const centerShiftY = (height - imgHeight * ratio) / 2;
       ctx.fillStyle = '#0f172a';
       ctx.fillRect(0, 0, width, height);
-      ctx.drawImage(img, 0, 0, img.width, img.height, centerShiftX, centerShiftY, img.width * ratio, img.height * ratio);
+      ctx.drawImage(img, 0, 0, imgWidth, imgHeight, centerShiftX, centerShiftY, imgWidth * ratio, imgHeight * ratio);
     } else {
       drawPresetBackground(ctx, width, height, selectedPreset);
     }

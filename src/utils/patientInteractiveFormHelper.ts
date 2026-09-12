@@ -68,6 +68,36 @@ export const getPatientSubmissions = (): PatientInteractiveSubmission[] => {
   }
 };
 
+const safelyDispatchUpdateEvent = (detail?: unknown) => {
+  if (typeof window === 'undefined') return;
+  try {
+    let event: Event | null = null;
+    try {
+      if (typeof window.CustomEvent === 'function') {
+        event = new window.CustomEvent('vigi_patient_submission_updated', { detail });
+      }
+    } catch {
+      // Fallback
+    }
+
+    if (!event && typeof document !== 'undefined' && typeof document.createEvent === 'function') {
+      try {
+        const customEvt = document.createEvent('CustomEvent');
+        customEvt.initCustomEvent('vigi_patient_submission_updated', false, false, detail);
+        event = customEvt;
+      } catch {
+        // Fallback
+      }
+    }
+
+    if (event) {
+      window.dispatchEvent(event);
+    }
+  } catch (err) {
+    console.warn('Ignored event dispatch exception', err);
+  }
+};
+
 /**
  * Salva uma nova resposta de paciente
  */
@@ -85,7 +115,7 @@ export const savePatientSubmission = (sub: PatientInteractiveSubmission): void =
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     // Dispara evento customizado para sincronizar abas e componentes
-    window.dispatchEvent(new CustomEvent('vigi_patient_submission_updated', { detail: sub }));
+    safelyDispatchUpdateEvent(sub);
   } catch (e) {
     console.error('Erro ao salvar submissão do paciente', e);
   }
@@ -99,7 +129,7 @@ export const deletePatientSubmission = (id: string): void => {
     const current = getPatientSubmissions();
     const updated = current.filter((item) => item.id !== id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent('vigi_patient_submission_updated'));
+    safelyDispatchUpdateEvent();
   } catch (e) {
     console.error('Erro ao excluir submissão', e);
   }
@@ -116,7 +146,7 @@ export const updatePatientSubmissionStatus = (
     const current = getPatientSubmissions();
     const updated = current.map((item) => (item.id === id ? { ...item, status } : item));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent('vigi_patient_submission_updated'));
+    safelyDispatchUpdateEvent();
   } catch (e) {
     console.error('Erro ao atualizar status', e);
   }

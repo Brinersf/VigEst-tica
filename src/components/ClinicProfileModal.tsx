@@ -384,7 +384,7 @@ export const ClinicProfileModal: React.FC<ClinicProfileModalProps> = ({
                   type="text"
                   value={formData.responsavel}
                   onChange={(e) => setFormData({ ...formData, responsavel: e.target.value })}
-                  placeholder="Dra. Mariana Silva"
+                  placeholder="Ex: Dra. Nome Completo"
                   className="w-full h-10 px-3 rounded-xl bg-[#0a1018] border border-[#1e2d40] text-[13px] text-white focus:border-[#00d3a1] outline-none"
                 />
               </div>
@@ -402,7 +402,7 @@ export const ClinicProfileModal: React.FC<ClinicProfileModalProps> = ({
                   type="text"
                   value={formData.registroConselho || ''}
                   onChange={(e) => setFormData({ ...formData, registroConselho: e.target.value })}
-                  placeholder="CRM 124580 / SP - Médica"
+                  placeholder="Ex: CRBM 00000 / SP - Biomédica Esteta"
                   className="w-full h-10 px-3 rounded-xl bg-[#0a1018] border border-[#1e2d40] text-[13px] text-white focus:border-[#00d3a1] outline-none"
                 />
               </div>
@@ -425,7 +425,7 @@ export const ClinicProfileModal: React.FC<ClinicProfileModalProps> = ({
                   type="text"
                   value={formData.nomeCliente}
                   onChange={(e) => setFormData({ ...formData, nomeCliente: e.target.value })}
-                  placeholder="Ana Paula Vasconcelos"
+                  placeholder="Ex: Nome Completo do(a) Paciente"
                   className="w-full h-10 px-3 rounded-xl bg-[#0a1018] border border-[#1e2d40] text-[13px] text-white focus:border-[#00d3a1] outline-none"
                 />
               </div>
@@ -443,7 +443,7 @@ export const ClinicProfileModal: React.FC<ClinicProfileModalProps> = ({
                   type="text"
                   value={formData.rgCliente || ''}
                   onChange={(e) => setFormData({ ...formData, rgCliente: e.target.value })}
-                  placeholder="12.345.678-9 SSP/SP"
+                  placeholder="Ex: 00.000.000-0 SSP/SP"
                   className="w-full h-10 px-3 rounded-xl bg-[#0a1018] border border-[#1e2d40] text-[13px] text-white focus:border-[#00d3a1] outline-none"
                 />
               </div>

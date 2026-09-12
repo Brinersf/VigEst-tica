@@ -30,11 +30,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
-    const body = (typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body) || {};
-    const orderStatus = body.order_status || body.status || '';
-    const customer = body.Customer || body.customer || {};
-    const email = (customer.email || body.email || '').toLowerCase().trim();
-    const orderId = body.order_id || body.id || 'N/A';
+    const rawBody = (typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body) || {};
+    const body = rawBody.order || rawBody;
+    const orderStatus = body.order_status || body.status || rawBody.order_status || '';
+    const customer = body.Customer || body.customer || rawBody.Customer || rawBody.customer || {};
+    const email = (customer.email || body.email || rawBody.email || '').toLowerCase().trim();
+    const orderId = body.order_id || body.id || rawBody.order_id || 'N/A';
 
     console.log('[Kiwify Webhook on Vercel] Received order:', {
       orderId,

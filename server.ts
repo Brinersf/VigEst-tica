@@ -329,11 +329,12 @@ let kiwifyPaidCache = loadKiwifyPaidCustomers();
 app.post("/api/kiwify/webhook", (req, res) => {
   try {
     const payload = req.body || {};
-    const orderStatus = (payload.order_status || payload.status || "").toLowerCase();
-    const orderId = payload.order_id || payload.id || `kw-${Date.now()}`;
-    const customer = payload.Customer || payload.customer || {};
-    const email = (customer.email || payload.email || "").toLowerCase().trim();
-    const name = customer.full_name || customer.name || payload.name || "";
+    const data = payload.order || payload;
+    const orderStatus = (data.order_status || data.status || payload.order_status || "").toLowerCase();
+    const orderId = data.order_id || data.id || payload.order_id || `kw-${Date.now()}`;
+    const customer = data.Customer || data.customer || payload.Customer || payload.customer || {};
+    const email = (customer.email || data.email || payload.email || "").toLowerCase().trim();
+    const name = customer.full_name || customer.name || data.name || payload.name || "";
     const phone = customer.mobile || customer.phone || "";
 
     console.log(`[Kiwify Webhook] Event received: Status=${orderStatus}, Email=${email}, Order=${orderId}`);

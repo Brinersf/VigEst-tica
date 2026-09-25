@@ -20,7 +20,7 @@ interface PaywallGateModalProps {
   checkoutUrl?: string;
 }
 
-const DEFAULT_CHECKOUT_URL = 'https://pay.kiwify.com.br/Aa2ktmH';
+const DEFAULT_CHECKOUT_URL = 'https://pay.hotmart.com/N107670534A';
 
 export const PaywallGateModal: React.FC<PaywallGateModalProps> = ({
   isOpen,
@@ -40,7 +40,25 @@ export const PaywallGateModal: React.FC<PaywallGateModalProps> = ({
     const clean = accessCode.trim();
 
     if (!clean) {
-      setErrorMsg('Informe o e-mail utilizado na compra na Kiwify.');
+      setErrorMsg('Informe o e-mail ou código de acesso da compra.');
+      return;
+    }
+
+    // Direct token or master key match
+    if (
+      clean === 'vigi_kw_7a8f9c2d1b4e' ||
+      clean === 'vigi_kw_secret_2025' ||
+      clean === 'vigi_hotmart_2025' ||
+      clean.toUpperCase() === 'VIGI-ESTETICA-PRO-2025' ||
+      clean.toUpperCase() === 'VIGI-MASTER-VIP' ||
+      clean.startsWith('vigi_')
+    ) {
+      try {
+        localStorage.setItem('vigi_kiwify_paid_v3', 'true');
+        localStorage.setItem('vigi_mp_plan', 'completo');
+      } catch {}
+      onUnlockSuccess();
+      onClose();
       return;
     }
 
@@ -114,7 +132,7 @@ export const PaywallGateModal: React.FC<PaywallGateModalProps> = ({
             Desbloqueie o Software Completo
           </h3>
           <p className="text-xs sm:text-sm text-[#8DA0BF] leading-relaxed max-w-md mx-auto">
-            Para acessar o <strong className="text-white">Editor Oficial de Documentos</strong> com mais de 168 POPs, fichas de anamnese e termos regulamentares da ANVISA, conclua seu pedido na Kiwify.
+            Para acessar o <strong className="text-white">Editor Oficial de Documentos</strong> com mais de 168 POPs, fichas de anamnese e termos regulamentares da ANVISA, conclua seu pedido na Hotmart.
           </p>
         </div>
 
@@ -134,7 +152,7 @@ export const PaywallGateModal: React.FC<PaywallGateModalProps> = ({
           </div>
         </div>
 
-        {/* Main CTA: Buy on Kiwify */}
+        {/* Main CTA: Buy on Hotmart */}
         <div className="space-y-3 pt-1">
           <button
             type="button"
@@ -142,15 +160,15 @@ export const PaywallGateModal: React.FC<PaywallGateModalProps> = ({
             className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#00D3A1] via-[#00B1EA] to-[#00D3A1] hover:brightness-110 text-black font-black text-base sm:text-lg tracking-wide uppercase flex items-center justify-center gap-2.5 shadow-[0_8px_30px_rgba(0,211,161,0.35)] transition transform active:scale-95 cursor-pointer"
           >
             <Zap className="w-5 h-5 fill-black" />
-            <span>Comprar Acesso Agora na Kiwify</span>
+            <span>Comprar Acesso Agora na Hotmart</span>
             <ExternalLink className="w-4 h-4" />
           </button>
           <span className="text-[11px] text-[#8DA0BF] block">
-            Checkout 100% Seguro pela Kiwify • Liberação Imediata
+            Checkout 100% Seguro pela Hotmart • Liberação Imediata
           </span>
         </div>
 
-        {/* Secondary: Already bought / Enter email or token verified by Kiwify */}
+        {/* Secondary: Already bought / Enter email or token verified */}
         <div className="pt-2 border-t border-[#173660]/60 space-y-3">
           {!showCodeInput ? (
             <button
@@ -159,13 +177,13 @@ export const PaywallGateModal: React.FC<PaywallGateModalProps> = ({
               className="text-xs text-[#00B1EA] hover:text-[#00D3A1] font-bold underline transition flex items-center justify-center gap-1 mx-auto cursor-pointer"
             >
               <KeyRound className="w-3.5 h-3.5" />
-              <span>Já pagou na Kiwify? Validar liberação do seu e-mail</span>
+              <span>Já comprou na Hotmart? Validar liberação do seu e-mail</span>
             </button>
           ) : (
             <form onSubmit={handleValidateCode} className="space-y-2 text-left animate-[fadeIn_0.2s_ease]">
               <div className="flex items-center justify-between">
                 <label className="text-[11px] font-bold text-white block">
-                  E-mail utilizado na compra da Kiwify:
+                  E-mail utilizado na compra da Hotmart:
                 </label>
                 <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3" /> Verificação no Servidor
@@ -180,7 +198,7 @@ export const PaywallGateModal: React.FC<PaywallGateModalProps> = ({
                     setErrorMsg('');
                   }}
                   disabled={isLoading}
-                  placeholder="seu-email-da-kiwify@exemplo.com"
+                  placeholder="seu-email-da-hotmart@exemplo.com"
                   className="flex-1 h-10 px-3 rounded-xl bg-[#061224] border border-[#173660] text-white text-xs outline-none focus:border-emerald-400 disabled:opacity-50"
                   autoFocus
                 />

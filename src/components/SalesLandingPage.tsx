@@ -34,7 +34,6 @@ import {
 import { ClinicData, DocumentItem } from '../types';
 import { INITIAL_DOCUMENTS } from '../data/documents';
 import { STEP_CATEGORIES, getStepCategoryForDocument } from '../utils/stepCategoryHelper';
-import { DynamicCardsSlideshow } from './DynamicCardsSlideshow';
 import { A4DocumentPreviewModal } from './A4DocumentPreviewModal';
 import { PaywallGateModal } from './PaywallGateModal';
 
@@ -59,7 +58,9 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
   currentClinicData,
   documents = INITIAL_DOCUMENTS
 }) => {
-  const [activeTab, setActiveTab] = useState<string>(STEP_CATEGORIES[0]?.name || '1. Documentos Base e ANVISA');
+  const [activeTab, setActiveTab] = useState<string>(
+    STEP_CATEGORIES[1]?.name || '2. POP Procedimentos Estéticos'
+  );
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isA4ModalOpen, setIsA4ModalOpen] = useState(false);
   const [a4ModalType, setA4ModalType] = useState<'prescription' | 'pop' | 'tcle'>('prescription');
@@ -67,9 +68,13 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
 
   const getCheckoutUrl = () => {
     try {
-      return localStorage.getItem('vigi_kiwify_checkout_url') || 'https://pay.kiwify.com.br/Aa2ktmH';
+      return (
+        localStorage.getItem('vigi_hotmart_checkout_url') ||
+        localStorage.getItem('vigi_kiwify_checkout_url') ||
+        'https://pay.hotmart.com/N107670534A'
+      );
     } catch {
-      return 'https://pay.kiwify.com.br/Aa2ktmH';
+      return 'https://pay.hotmart.com/N107670534A';
     }
   };
 
@@ -123,21 +128,16 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
               </span>
             </div>
             <p className="text-[10px] text-[#94A3B8] font-medium tracking-wide uppercase">
-              Pasta Sanitária & Blindagem Jurídica
+              Blindagem Jurídico-Sanitária
             </p>
           </div>
         </div>
 
         <nav className="hidden lg:flex items-center gap-4 xl:gap-5 text-[13px] font-semibold text-[#94A3B8]">
-          <a href="#amostra-dinamica" className="hover:text-[#00D3A1] transition text-[#00D3A1] flex items-center gap-1.5 font-bold">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Amostra POPs</span>
+          <a href="#procedimentos" className="hover:text-[#00D3A1] transition text-[#00D3A1] flex items-center gap-1.5 font-bold">
+            <Layers className="w-3.5 h-3.5" />
+            <span>O Que Inclui</span>
           </a>
-          <a href="#prescricoes-studio" className="hover:text-pink-400 transition text-pink-400 flex items-center gap-1.5 font-bold">
-            <Pill className="w-3.5 h-3.5" />
-            <span>Prescrições</span>
-          </a>
-          <a href="#procedimentos" className="hover:text-[#00D3A1] transition">O Que Inclui</a>
           <a href="#beneficios" className="hover:text-[#00D3A1] transition">Benefícios</a>
           <a href="#como-funciona" className="hover:text-[#00D3A1] transition">Como Funciona</a>
           <a href="#depoimentos" className="hover:text-[#00D3A1] transition">Depoimentos</a>
@@ -188,23 +188,27 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
         <div className="pointer-events-none absolute top-1/2 -right-40 w-[600px] h-[600px] bg-[#00B1EA]/10 blur-[130px] rounded-full" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Top category pill */}
+          {/* Top Anchor Hook */}
           <div className="flex justify-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0E274D]/90 border border-[#00D3A1]/40 text-[#00D3A1] text-xs font-bold shadow-lg">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Procedimentos Operacionais Padrão e Manual para Estética Avançada</span>
+            <div className="inline-flex items-center gap-2.5 px-4 sm:px-5 py-2 rounded-full bg-[#092244]/90 border border-[#00D3A1]/50 text-white text-xs sm:text-sm font-bold shadow-[0_0_20px_rgba(0,211,161,0.2)] text-center">
+              <span className="flex h-2 w-2 relative shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00D3A1] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00D3A1]"></span>
+              </span>
+              <ShieldCheck className="w-4 h-4 text-[#00D3A1] shrink-0" />
+              <span>Esteja 100% preparado para qualquer fiscalização de surpresa da Vigilância Sanitária ou conselhos de classe</span>
             </div>
           </div>
 
           <div className="mt-6 text-center max-w-4xl mx-auto">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.1]">
-              Pasta Sanitária para Estética & <br />
+              Blindagem Jurídico-Sanitária <br />
               <span className="bg-gradient-to-r from-[#00D3A1] via-[#38BDF8] to-[#00D3A1] bg-clip-text text-transparent">
-                Blindagem Jurídico-Sanitária
+                para Clínicas de Estética
               </span>
             </h1>
             <p className="mt-5 text-base sm:text-lg md:text-xl text-[#94A3B8] max-w-3xl mx-auto leading-relaxed">
-              Todos os <strong className="text-white">{documents.length} documentos regulatórios e clínicos oficiais</strong>: Documentos Base ANVISA, POPs de Injetáveis, Lasers & Tecnologias, Procedimentos Corporais e Faciais, Biossegurança & CME, Cadernos Sanitários Pautados, TCLEs, Contratos, PGRSS e o <strong className="text-pink-400">Novo Estúdio de Prescrições Estéticas</strong> — prontos para personalizar em 1 clique.
+              <strong className="text-white">Documentos regulatórios e clínicos oficiais</strong>: Documentos Base ANVISA, POPs de Injetáveis, Lasers & Tecnologias, Procedimentos Corporais e Faciais, Biossegurança & CME, Cadernos Sanitários Pautados, TCLEs, Contratos, PGRSS e o <strong className="text-pink-400">Novo Estúdio de Prescrições Estéticas</strong> — prontos para personalizar em 1 clique.
             </p>
           </div>
 
@@ -333,7 +337,7 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
                     className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#D97706] to-[#B45309] hover:from-[#FBBF24] hover:to-[#D97706] text-black font-black text-base sm:text-lg tracking-wide uppercase flex items-center justify-center gap-3 shadow-[0_10px_35px_rgba(245,158,11,0.4)] border border-[#FDE68A] transition transform active:scale-95 cursor-pointer"
                   >
                     <Building2 className="w-5 h-5 text-black" />
-                    <span>{isPaid ? 'Acessar Software Completo (Liberado)' : 'Garantir Minha Pasta & Ir para o Pagamento'}</span>
+                    <span>{isPaid ? 'Acessar Software Completo (Liberado)' : 'Garantir Minha Blindagem & Ir para o Pagamento'}</span>
                   </button>
                   <div className="mt-2 flex items-center justify-center gap-4 text-[11px] text-[#94A3B8]">
                     <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-[#00D3A1]" /> Regularização ANVISA</span>
@@ -341,181 +345,6 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
                     <span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5 text-[#F59E0B]" /> Acesso Completo ao Editor</span>
                     <span>•</span>
                     <span className="flex items-center gap-1"><Award className="w-3.5 h-3.5 text-[#00B1EA]" /> Padrão Ouro RDC 63/2011</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* DYNAMIC SLIDESHOW SECTION: POPs & Termos passando na tela em cards dinâmicos */}
-          <div className="mt-16 max-w-5xl mx-auto" id="amostra-dinamica">
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#00D3A1]/10 border border-[#00D3A1]/30 text-[#00D3A1] text-xs font-bold mb-3">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Cards Dinâmicos & Editáveis em Tempo Real</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
-                POPs & Termos Oficiais Passando na Tela
-              </h2>
-              <p className="text-sm text-[#94A3B8] max-w-2xl mx-auto mt-2">
-                Navegue e visualize as amostras oficiais no formato A4 regulamentar da ANVISA. Para editar e exportar todos os {documents.length} documentos da sua clínica, acesse o editor completo.
-              </p>
-            </div>
-
-            <DynamicCardsSlideshow
-              documents={documents}
-              onCtaClick={handleAccessClick}
-              onDirectAccess={handleAccessClick}
-              clinicData={currentClinicData}
-              onOpenA4Modal={(docType) => {
-                setA4ModalType(docType || 'pop');
-                setIsA4ModalOpen(true);
-              }}
-            />
-          </div>
-
-          {/* STATISTICS BAR */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
-            <div className="bg-[#0A1D3A]/90 border border-[#173660] rounded-2xl p-5 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-white">{documents.length}+</div>
-              <div className="text-xs text-[#94A3B8] font-bold uppercase tracking-wider mt-1">
-                Documentos & POPs Oficiais
-              </div>
-            </div>
-
-            <div className="bg-[#0A1D3A]/90 border border-[#173660] rounded-2xl p-5 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-[#00D3A1]">100%</div>
-              <div className="text-xs text-[#94A3B8] font-bold uppercase tracking-wider mt-1">
-                Conforme RDC 63/2011 & RDC 222
-              </div>
-            </div>
-
-            <div className="bg-[#0A1D3A]/90 border border-[#173660] rounded-2xl p-5 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-[#38BDF8]">1 Clique</div>
-              <div className="text-xs text-[#94A3B8] font-bold uppercase tracking-wider mt-1">
-                Preenchimento Automático
-              </div>
-            </div>
-
-            <div className="bg-[#0A1D3A]/90 border border-[#173660] rounded-2xl p-5 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-pink-400">Novo</div>
-              <div className="text-xs text-[#94A3B8] font-bold uppercase tracking-wider mt-1">
-                Estúdio de Prescrições
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ESTÚDIO DE PRESCRIÇÕES ESTÉTICAS PERSONALIZADAS SHOWCASE */}
-      <section className="py-16 bg-gradient-to-b from-[#061224] via-[#10081C] to-[#061224] border-y border-pink-500/30 relative" id="prescricoes-studio">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-[#2A082E] via-[#16061E] to-[#0D182E] border-2 border-pink-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
-            <div className="grid lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-7 space-y-4">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pink-500/20 border border-pink-500/40 text-pink-300 text-xs font-black">
-                  <Pill className="w-4 h-4 text-pink-400" />
-                  <span>MÓDULO EXCLUSIVO VIGIESTÉTICA 5.0</span>
-                </div>
-
-                <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-                  Estúdio Interativo de <br />
-                  <span className="bg-gradient-to-r from-pink-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
-                    Prescrições Estéticas & Fórmulas
-                  </span>
-                </h2>
-
-                <p className="text-sm sm:text-base text-[#CBD5E1] leading-relaxed">
-                  Crie e personalize receitas completas para seus pacientes com cosmecêuticos de uso tópico, nutracêuticos In & Out, fórmulas pós-procedimento e manipulados de suporte.
-                </p>
-
-                <div className="grid sm:grid-cols-2 gap-3 pt-2">
-                  <div className="bg-black/40 border border-pink-500/30 rounded-xl p-3 text-xs text-[#E2E8F0] space-y-1">
-                    <div className="font-bold text-pink-300 flex items-center gap-1.5">
-                      <Check className="w-3.5 h-3.5 text-pink-400" /> Fórmulas Prontas de Alta Performance
-                    </div>
-                    <p className="text-[11px] text-[#94A3B8]">Pós-Peeling, Melasma In & Out, Bioestimuladores, Antiacne e Hidratação Barreira.</p>
-                  </div>
-
-                  <div className="bg-black/40 border border-pink-500/30 rounded-xl p-3 text-xs text-[#E2E8F0] space-y-1">
-                    <div className="font-bold text-pink-300 flex items-center gap-1.5">
-                      <Check className="w-3.5 h-3.5 text-pink-400" /> Customização Livre de Ativos
-                    </div>
-                    <p className="text-[11px] text-[#94A3B8]">Adicione novos ativos, concentrações (% ou mg), veículos (sérum, cápsula) e posologia.</p>
-                  </div>
-                </div>
-
-                <div className="pt-4 flex flex-wrap items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={handleAccessClick}
-                    className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 hover:opacity-95 text-white font-black text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-pink-500/30 transition transform active:scale-95 cursor-pointer"
-                  >
-                    <Pill className="w-4 h-4" />
-                    <span>Acessar Estúdio de Prescrições no Editor</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setA4ModalType('prescription');
-                      setIsA4ModalOpen(true);
-                    }}
-                    className="px-5 py-3.5 rounded-2xl bg-[#140A26] hover:bg-[#20103C] border-2 border-pink-500/50 hover:border-pink-400 text-pink-200 font-extrabold text-xs sm:text-sm flex items-center gap-2 shadow-md transition transform active:scale-95 cursor-pointer"
-                    title="Visualizar documento completo no formato e proporção real A4"
-                  >
-                    <Eye className="w-4 h-4 text-pink-400" />
-                    <span>Ver Modelo Completo em A4</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Interactive A4 Document Preview Card (Clickable to Expand A4 Model) */}
-              <div
-                onClick={() => {
-                  setA4ModalType('prescription');
-                  setIsA4ModalOpen(true);
-                }}
-                className="lg:col-span-5 bg-[#061224]/90 border-2 border-pink-500/40 hover:border-pink-400 rounded-2xl p-5 space-y-3 shadow-2xl relative cursor-pointer group transition-all transform hover:-translate-y-1 hover:shadow-pink-500/20"
-                title="Clique para abrir e ver o documento completo no modelo oficial A4"
-              >
-                {/* Floating Click-to-Expand Indicator */}
-                <div className="absolute top-2 right-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pink-500/30 border border-pink-400/60 text-pink-200 text-[10px] font-black group-hover:bg-pink-500 group-hover:text-white transition shadow-sm">
-                  <Maximize2 className="w-3 h-3 text-pink-300 group-hover:text-white" />
-                  <span>Ver em A4</span>
-                </div>
-
-                <div className="flex items-center justify-between border-b border-pink-500/20 pb-2 pr-20">
-                  <span className="text-xs font-mono font-bold text-pink-300">RECEITUÁRIO ESTÉTICO PADRÃO A4</span>
-                  <span className="text-[10px] bg-pink-500/20 text-pink-300 px-2 py-0.5 rounded font-bold">TIMBRE OFICIAL</span>
-                </div>
-
-                <div className="space-y-2 text-[11px] text-[#CBD5E1]">
-                  <div className="p-2.5 rounded-lg bg-pink-950/40 border border-pink-800/50 group-hover:border-pink-600 transition">
-                    <div className="font-bold text-white flex items-center justify-between">
-                      <span>USO TÓPICO: Sérum Clareador Biomimético</span>
-                      <span className="text-[9px] text-pink-400 font-mono">QSP 30g</span>
-                    </div>
-                    <div className="text-[10px] text-pink-300 mt-0.5">Ácido Tranexâmico 3% + Alfa Arbutin 2% + Niacinonamida 4% + Oligo HA 0.5%</div>
-                  </div>
-
-                  <div className="p-2.5 rounded-lg bg-purple-950/40 border border-purple-800/50 group-hover:border-purple-600 transition">
-                    <div className="font-bold text-white flex items-center justify-between">
-                      <span>USO ORAL: Nutracêutico In & Out Antioxidante</span>
-                      <span className="text-[9px] text-purple-400 font-mono">60 Doses</span>
-                    </div>
-                    <div className="text-[10px] text-purple-300 mt-0.5">Polypodium leucotomos 240mg + Picnogenol 100mg + Vitamina C 500mg</div>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-pink-500/20 flex items-center justify-between text-[11px]">
-                  <div className="text-[10px] text-[#94A3B8] italic">
-                    Formatado com logo, CNPJ e registro do Resp. Técnico.
-                  </div>
-                  <div className="text-pink-300 font-bold flex items-center gap-1 group-hover:text-white transition">
-                    <span>Expandir folha A4</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition" />
                   </div>
                 </div>
               </div>
@@ -532,10 +361,10 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
             <span>Compêndio Master 2026</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
-            O Que Está Incluso na Pasta Sanitária
+            O Que Está Incluso na Blindagem Jurídico-Sanitária
           </h2>
           <p className="mt-2 text-sm text-[#94A3B8]">
-            Mais de {documents.length} documentos categorizados de acordo com os 7 pilares de fiscalização sanitária.
+            Documentos regulatórios e clínicos oficiais categorizados de acordo com as exigências sanitárias.
           </p>
         </div>
 
@@ -784,14 +613,14 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-              Adquira a Pasta Sanitária & <br />
+              Garanta a Blindagem Jurídico-Sanitária & <br />
               <span className="bg-gradient-to-r from-[#00D3A1] via-[#38BDF8] to-[#00D3A1] bg-clip-text text-transparent">
                 Desbloqueie o Software Completo
               </span>
             </h2>
 
             <p className="text-sm sm:text-base text-[#94A3B8] max-w-2xl mx-auto leading-relaxed">
-              O acesso à <strong className="text-white">Interface do Software</strong> com os {documents.length}+ documentos editáveis, gerador A4 oficial e estúdio de prescrições é liberado automaticamente no momento em que o pagamento for confirmado na Kiwify.
+              O acesso à <strong className="text-white">Interface do Software</strong> com os {documents.length}+ documentos editáveis, gerador A4 oficial e estúdio de prescrições é liberado automaticamente no momento em que o pagamento for confirmado na Hotmart.
             </p>
           </div>
 
@@ -801,7 +630,7 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#00D3A1] via-[#F59E0B] to-[#EC4899]" />
 
             <div className="grid md:grid-cols-12 gap-8 lg:gap-10 items-center">
-              {/* Left Column: Offer Details & Kiwify CTA */}
+              {/* Left Column: Offer Details & Hotmart CTA */}
               <div className="md:col-span-7 space-y-6 text-left">
                 <div className="space-y-2">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
@@ -819,18 +648,18 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
                 {/* Price Display */}
                 <div className="p-5 rounded-2xl bg-[#061224] border border-[#173660] space-y-2">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-xs text-[#64748B] line-through font-bold">De R$ 297,00</span>
+                    <span className="text-xs text-[#64748B] line-through font-bold">De R$ 397,00</span>
                     <span className="text-xs font-extrabold text-[#F59E0B] uppercase tracking-wider bg-[#F59E0B]/10 px-2 py-0.5 rounded border border-[#F59E0B]/30">
-                      Mais de 65% de Desconto
+                      Oferta Especial de Lançamento
                     </span>
                   </div>
                   <div className="flex items-baseline gap-2">
                     <span className="text-xs sm:text-sm text-[#94A3B8] font-bold">Por apenas</span>
-                    <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">12x R$ 9,74</span>
-                    <span className="text-xs sm:text-sm text-[#00D3A1] font-bold">no cartão</span>
+                    <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">R$ 197,00</span>
+                    <span className="text-xs sm:text-sm text-[#00D3A1] font-bold">à vista</span>
                   </div>
                   <div className="text-xs text-[#94A3B8]">
-                    ou <strong className="text-white font-black text-sm">R$ 97,00 à vista</strong> no Pix com liberação automática instantânea
+                    ou em até <strong className="text-white font-black text-sm">12x no cartão</strong> ou no <strong className="text-[#00D3A1] font-black text-sm">Pix</strong> com liberação instantânea
                   </div>
                 </div>
 
@@ -842,13 +671,13 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
                     className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#00D3A1] via-[#00B1EA] to-[#00D3A1] hover:brightness-110 text-black font-black text-base sm:text-lg tracking-wide uppercase flex items-center justify-center gap-3 shadow-[0_10px_35px_rgba(0,211,161,0.4)] transition transform active:scale-95 cursor-pointer"
                   >
                     <Zap className="w-5 h-5 fill-black shrink-0" />
-                    <span>PAGAR AGORA NA KIWIFY • LIBERAÇÃO IMEDIATA</span>
+                    <span>PAGAR AGORA NA HOTMART • LIBERAÇÃO IMEDIATA</span>
                     <ExternalLink className="w-4 h-4 shrink-0" />
                   </button>
 
                   <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#8DA0BF] pt-1">
                     <span className="flex items-center gap-1">
-                      <Lock className="w-3.5 h-3.5 text-emerald-400" /> Checkout Seguro Kiwify
+                      <Lock className="w-3.5 h-3.5 text-emerald-400" /> Checkout Seguro Hotmart
                     </span>
                     <span className="flex items-center gap-1">
                       <Zap className="w-3.5 h-3.5 text-amber-400" /> Liberação Automática no Pix
@@ -939,11 +768,11 @@ export const SalesLandingPage: React.FC<SalesLandingPageProps> = ({
           {[
             {
               q: 'Como funciona a transição entre a página inicial e a interface do software?',
-              a: 'O sistema é dividido em duas interfaces: a Interface Inicial (com a apresentação de todos os 168+ documentos, garantias e a seção de pagamento) e a Interface do Software (com o editor inteligente, personalização de dados da clínica, estúdio de fórmulas e exportação A4). A migração para o software é liberada automaticamente no exato momento em que seu pagamento na Kiwify é aprovado.'
+              a: 'O sistema é dividido em duas interfaces: a Interface Inicial (com a apresentação de todos os 168+ documentos, garantias e a seção de pagamento) e a Interface do Software (com o editor inteligente, personalização de dados da clínica, estúdio de fórmulas e exportação A4). A migração para o software é liberada automaticamente no exato momento em que seu pagamento na Hotmart é aprovado.'
             },
             {
-              q: 'Como recebo meu acesso após pagar na Kiwify?',
-              a: 'Assim que a Kiwify confirma o pagamento (instantâneo no Pix ou Cartão), ela redireciona você imediatamente para a Interface do Software com acesso liberado. O seu navegador salva a licença e você pode voltar e acessar quantas vezes quiser sem restrições.'
+              q: 'Como recebo meu acesso após pagar na Hotmart?',
+              a: 'Assim que a Hotmart confirma o pagamento (instantâneo no Pix ou Cartão), ela redireciona você imediatamente para a Interface do Software com acesso liberado. O seu navegador salva a licença e você pode voltar e acessar quantas vezes quiser sem restrições.'
             },
             {
               q: 'Posso criar e personalizar minhas próprias fórmulas e prescrições estéticas?',

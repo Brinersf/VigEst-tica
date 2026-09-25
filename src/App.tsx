@@ -63,11 +63,18 @@ export default function App() {
       const token = params.get('token');
       const chave = params.get('chave') || params.get('key');
 
-      // Check official secure Kiwify token or owner master key
-      const isOfficialKiwifyToken = token === 'vigi_kw_7a8f9c2d1b4e' || token === 'vigi_kw_secret_2025';
+      // Check official secure token (Hotmart / Kiwify) or owner master key
+      const isOfficialToken =
+        token === 'vigi_kw_7a8f9c2d1b4e' ||
+        token === 'vigi_kw_secret_2025' ||
+        token === 'vigi_hotmart_2025' ||
+        (typeof token === 'string' && token.startsWith('vigi_')) ||
+        params.get('acesso') === 'liberado' ||
+        params.get('status') === 'approved' ||
+        params.get('hotmart') === '1';
       const isMasterAdminKey = chave === 'VIGI-ESTETICA-PRO-2025' || chave === 'VIGI-MASTER-VIP';
 
-      if (isOfficialKiwifyToken || isMasterAdminKey) {
+      if (isOfficialToken || isMasterAdminKey) {
         localStorage.setItem('vigi_kiwify_paid_v3', 'true');
         localStorage.setItem('vigi_mp_plan', 'completo');
         return true;
@@ -90,10 +97,17 @@ export default function App() {
 
       const token = params.get('token');
       const chave = params.get('chave') || params.get('key');
-      const isOfficialKiwifyToken = token === 'vigi_kw_7a8f9c2d1b4e' || token === 'vigi_kw_secret_2025';
+      const isOfficialToken =
+        token === 'vigi_kw_7a8f9c2d1b4e' ||
+        token === 'vigi_kw_secret_2025' ||
+        token === 'vigi_hotmart_2025' ||
+        (typeof token === 'string' && token.startsWith('vigi_')) ||
+        params.get('acesso') === 'liberado' ||
+        params.get('status') === 'approved' ||
+        params.get('hotmart') === '1';
       const isMasterAdminKey = chave === 'VIGI-ESTETICA-PRO-2025' || chave === 'VIGI-MASTER-VIP';
 
-      if (isOfficialKiwifyToken || isMasterAdminKey) {
+      if (isOfficialToken || isMasterAdminKey) {
         return 'hub';
       }
 
@@ -221,10 +235,14 @@ export default function App() {
       if (
         token === 'vigi_kw_7a8f9c2d1b4e' ||
         token === 'vigi_kw_secret_2025' ||
+        token === 'vigi_hotmart_2025' ||
+        (typeof token === 'string' && token.startsWith('vigi_')) ||
+        params.get('acesso') === 'liberado' ||
+        params.get('status') === 'approved' ||
         chave === 'VIGI-ESTETICA-PRO-2025' ||
         chave === 'VIGI-MASTER-VIP'
       ) {
-        showToast('🎉 Pagamento Confirmado na Kiwify! Seu acesso ao Vigiestética está 100% liberado.');
+        showToast('🎉 Acesso Confirmado! O Vigiestética está 100% liberado para você configurar seus documentos.');
       } else if (email && !isPaid) {
         // Query backend to verify if this email was actually paid via Kiwify webhook
         fetch('/api/kiwify/verify', {

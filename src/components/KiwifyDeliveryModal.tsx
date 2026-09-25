@@ -32,9 +32,13 @@ export const KiwifyDeliveryModal: React.FC<KiwifyDeliveryModalProps> = ({
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [kiwifyCheckoutUrl, setKiwifyCheckoutUrl] = useState<string>(() => {
     try {
-      return localStorage.getItem('vigi_kiwify_checkout_url') || 'https://pay.kiwify.com.br/Aa2ktmH';
+      return (
+        localStorage.getItem('vigi_hotmart_checkout_url') ||
+        localStorage.getItem('vigi_kiwify_checkout_url') ||
+        'https://pay.hotmart.com/N107670534A'
+      );
     } catch {
-      return 'https://pay.kiwify.com.br/Aa2ktmH';
+      return 'https://pay.hotmart.com/N107670534A';
     }
   });
 

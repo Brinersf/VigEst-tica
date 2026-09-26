@@ -673,20 +673,6 @@ export default function App() {
 
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button
-            type="button"
-            onClick={() => {
-              const deliveryUrl = window.location.origin;
-              navigator.clipboard.writeText(deliveryUrl);
-              showToast('🔗 Link copiado! Cole na Kiwify como URL de Entrega do seu produto.');
-            }}
-            className="h-8 px-2 sm:px-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-black font-extrabold text-[11px] transition flex items-center gap-1 active:scale-95 cursor-pointer shadow-sm shadow-emerald-500/20"
-            title="Copiar URL para colar na entrega da Kiwify"
-          >
-            <Share2 className="w-3.5 h-3.5 text-black stroke-[2.5]" />
-            <span className="hidden md:inline">Copiar Link Kiwify</span>
-          </button>
-
-          <button
             onClick={() => setIsClinicModalOpen(true)}
             className="h-8 px-2.5 sm:px-3 rounded-xl bg-gradient-to-r from-[#00D3A1]/20 to-[#00B1EA]/20 hover:from-[#00D3A1]/30 hover:to-[#00B1EA]/30 border border-[#00D3A1]/60 text-[11px] text-white transition font-black flex items-center gap-1.5 active:scale-95 cursor-pointer shadow-sm shadow-[#00D3A1]/10"
             title="Editar dados da clínica cadastrados"
@@ -694,15 +680,6 @@ export default function App() {
             <Sparkles className="w-3.5 h-3.5 text-[#00D3A1]" />
             <span className="hidden sm:inline">Dados da Clínica</span>
             <span className="sm:hidden">Dados</span>
-          </button>
-
-          <button
-            onClick={() => setIsConfigModalOpen(true)}
-            className="h-8 px-2 sm:px-2.5 rounded-xl bg-[#0A1D3A] border border-emerald-500/50 hover:border-emerald-400 text-[11px] text-white font-bold hover:bg-[#0E274D] transition flex items-center gap-1 active:scale-95 cursor-pointer"
-            title="Instruções e Link de Entrega na Kiwify"
-          >
-            <DollarSign className="w-3.5 h-3.5 text-emerald-400 stroke-[2.5]" />
-            <span className="hidden md:inline">Instruções Kiwify</span>
           </button>
 
           <button
